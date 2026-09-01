@@ -1,147 +1,162 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, StatusBar, RefreshControl, ActivityIndicator } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>76SCORES - FIXTURE COMPLETO</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body class="bg-[#0a0e14] text-white flex justify-center">
+<div class="w-full max-w-[430px] bg-[#12171f] min-h-screen flex flex-col pb-[75px]">
 
-const SPORTS = ['FÚTBOL', 'BASKET', 'BÉISBOL', 'TENIS', 'FÚTBOL AMERICANO', 'BOX'];
-const FREE_API = 'https://site.api.espn.com/apis/site/v2/sports';
+<header class="p-3 bg-[#1a212e] sticky top-0 z-30">
+  <div class="flex justify-between items-center">
+    <h1 class="font-black">76<span class="text-[#ff3b3b]">SCORES</span></h1>
+    <span id="user-tz" class="text-[8px] bg-[#ff3b3b] px-2 py-1 rounded-full text-white">🕒 HORA LOCAL</span>
+  </div>
+  <div class="flex gap-1.5 mt-2 overflow-x-auto">
+    <button onclick="setSport('soccer')" id="s-soccer" class="px-3 py-1.5 rounded-full text-[10px] font-black bg-[#ff3b3b]">⚽ FÚTBOL</button>
+    <button onclick="setSport('basket')" id="s-basket" class="px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400">🏀 BASKET</button>
+    <button onclick="setSport('mlb')" id="s-mlb" class="px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400">⚾ BÉISBOL</button>
+    <button onclick="setSport('tenis')" id="s-tenis" class="px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400">🎾 TENIS</button>
+  </div>
+  <div id="basket-sub" class="hidden flex gap-1.5 mt-2 overflow-x-auto">
+    <button onclick="setBasketLiga('nba')" id="b-nba" class="px-3 py-1 rounded-full text-[9px] font-bold bg-[#ff3b3b]">NBA</button>
+    <button onclick="setBasketLiga('wnba')" id="b-wnba" class="px-3 py-1 rounded-full text-[9px] font-bold bg-[#1e2735] text-gray-400">WNBA</button>
+    <button onclick="setBasketLiga('euro')" id="b-euro" class="px-3 py-1 rounded-full text-[9px] font-bold bg-[#1e2735] text-gray-400">EUROLIGA</button>
+    <button onclick="setBasketLiga('ncb')" id="b-ncb" class="px-3 py-1 rounded-full text-[9px] font-bold bg-[#1e2735] text-gray-400">NCAA</button>
+  </div>
+</header>
 
-export default function App() {
-  const [activeSport, setActiveSport] = useState('FÚTBOL');
-  const [activeTab, setActiveTab] = useState('HOY');
-  const [games, setGames] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
+<div class="flex bg-[#1a212e] text-[10px] font-bold sticky top-[88px] z-20">
+  <button id="t-p" onclick="setTab('p')" class="flex-1 py-3 border-b-2 border-[#ff3b3b] text-white">PARTIDOS</button>
+  <button id="t-f" onclick="setTab('f')" class="flex-1 py-3 border-b-2 border-transparent text-gray-500">FIXTURE COMPLETO</button>
+  <button id="t-t" onclick="setTab('t')" class="flex-1 py-3 border-b-2 border-transparent text-gray-500">TABLA</button>
+</div>
 
-  // MODIFICACIÓN #1: Zona horaria 100% automática
-  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone; // America/Guayaquil
-  const timeZoneOffset = new Date().toLocaleTimeString('es-EC', { timeZoneName: 'short' }).split(' ').pop();
+<main class="p-3">
+  <select id="liga" onchange="load()" class="w-full bg-[#1e2735] text-[12px] rounded-xl px-3 py-3 border border-gray-700 mb-2">
+    <option value="ecu.1">🇪🇨 LigaPro Ecuador</option>
+    <option value="eng.1">🏴󠁧󠁢󠁥󠁮󠁧󠁿 Premier League</option>
+    <option value="esp.1">🇪🇸 LaLiga</option>
+    <option value="ita.1">🇮🇹 Serie A</option>
+    <option value="ger.1">🇩🇪 Bundesliga</option>
+    <option value="fra.1">🇫🇷 Ligue 1</option>
+    <option value="uefa.champions">🏆 Champions League</option>
+    <option value="conmebol.libertadores">🏆 Libertadores</option>
+    <option value="conmebol.sudamericana">🏆 Sudamericana</option>
+    <option value="arg.1">🇦🇷 Liga Argentina</option>
+    <option value="bra.1">🇧🇷 Brasileirao</option>
+    <option value="mex.1">🇲🇽 Liga MX</option>
+    <option value="usa.1">🇺🇸 MLS</option>
+  </select>
+  <div id="info" class="text-[10px] text-gray-300 bg-[#1e2735] p-2 rounded-lg mb-2">Cargando...</div>
+  <input id="q" oninput="filter()" placeholder="🔍 Buscar equipo..." class="w-full bg-[#1e2735] text-[12px] rounded-full px-4 py-2.5 mb-3 outline-none"/>
+  <div id="list" class="space-y-2"></div>
+  <div id="future" class="hidden space-y-2"></div>
+  <div id="table" class="hidden"></div>
+</main>
+</div>
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('es-EC', {
-      weekday: 'short', day: '2-digit', month: 'short',
-      hour: '2-digit', minute: '2-digit', hour12: true, timeZone
-    }) + ` ${timeZoneOffset}`;
-  };
+<script>
+let all=[], allFuture=[], sport='soccer', basketLiga='nba', tab='p';
+// MOD #1: Detecta zona automaticamente pero NO la muestra
+let userTZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-  const fetchGames = async () => {
-    try {
-      let endpoint = '';
-      if (activeSport === 'FÚTBOL') endpoint = `${FREE_API}/soccer/ecu.1/scoreboard`;
-      if (activeSport === 'BASKET') endpoint = `${FREE_API}/basketball/nba/scoreboard`;
-      if (activeSport === 'BÉISBOL') endpoint = `${FREE_API}/baseball/mlb/scoreboard`;
-      if (activeSport === 'FÚTBOL AMERICANO') endpoint = `${FREE_API}/football/nfl/scoreboard`;
-      if (activeSport === 'TENIS' || activeSport === 'BOX') endpoint = `${FREE_API}/soccer/eng.1/scoreboard`;
-
-      const res = await fetch(endpoint);
-      const data = await res.json();
-      setGames(data.events || []);
-    } catch (e) {
-      setGames([]);
-    }
-    setLoading(false);
-    setRefreshing(false);
-  };
-
-  useEffect(() => { fetchGames(); }, [activeSport]);
-  useEffect(() => {
-    const interval = setInterval(fetchGames, 30000);
-    return () => clearInterval(interval);
-  }, [activeSport]);
-
-  const renderHome = () => (
-    <>
-      {/* Barra deslizable deportes */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.sportsBar}>
-        {SPORTS.map(s => (
-          <TouchableOpacity key={s} onPress={() => setActiveSport(s)}
-            style={[styles.sportBtn, activeSport === s && styles.sportBtnActive]}>
-            <Text style={[styles.sportText, activeSport === s && styles.sportTextActive]}>{s}</Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-
-      <View style={styles.hoyHeader}>
-        <Text style={styles.hoyText}>HOY</Text>
-        <Text style={styles.hoySub}>{timeZone} • {timeZoneOffset}</Text>
-      </View>
-
-      {loading? <ActivityIndicator color="#ff3b3b" /> :
-        games.map((ev, i) => {
-          const comp = ev.competitions?.[0];
-          return (
-            <View key={i} style={styles.card}>
-              <Text style={styles.league}>{comp?.type?.abbreviation || activeSport} • {formatDate(ev.date)}</Text>
-              <View style={styles.matchRow}>
-                <View style={styles.team}>
-                  <Text style={styles.teamName}>{comp?.competitors?.[0]?.team?.displayName || 'Local'}</Text>
-                  <Text style={styles.score}>{comp?.competitors?.[0]?.score || '0'}</Text>
-                </View>
-                <Text style={styles.vs}>vs</Text>
-                <View style={styles.team}>
-                  <Text style={styles.score}>{comp?.competitors?.[1]?.score || '0'}</Text>
-                  <Text style={styles.teamName}>{comp?.competitors?.[1]?.team?.displayName || 'Visita'}</Text>
-                </View>
-              </View>
-              <Text style={styles.status}>{ev.status?.type?.detail || 'Scheduled'} • {comp?.status?.type?.shortDetail || ''}</Text>
-            </View>
-          )
-        })
-      }
-    </>
-  );
-
-  return (
-    <View style={styles.container}>
-      <StatusBar barStyle="light-content" />
-      <View style={styles.header}>
-        <Text style={styles.logo}>76SCORES</Text>
-        <Text style={styles.tz}>{timeZone}</Text>
-      </View>
-
-      <ScrollView
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); fetchGames(); }} />}
-      >
-        {activeTab === 'HOY' && renderHome()}
-        {activeTab === 'LIGAS' && <Text style={styles.center}>Pantalla de LIGAS - esperando tu lista</Text>}
-        {activeTab === 'FAVORITOS' && <Text style={styles.center}>Tus favoritos</Text>}
-        {activeTab === 'NOTICIAS' && <Text style={styles.center}>Noticias</Text>}
-        {activeTab === 'CONFIG' && <Text style={styles.center}>Configuración - Zona: {timeZone}</Text>}
-      </ScrollView>
-
-      <View style={styles.bottomNav}>
-        {['HOY', 'FAVORITOS', 'LIGAS', 'NOTICIAS', 'CONFIG'].map(t => (
-          <TouchableOpacity key={t} onPress={() => setActiveTab(t)} style={styles.navBtn}>
-            <Text style={[styles.navText, activeTab === t && { color: '#ff3b3b' }]}>{t}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-    </View>
-  );
+function setSport(s){
+ sport=s;
+ document.querySelectorAll('[id^=s-]').forEach(b=>b.className='px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400');
+ document.getElementById('s-'+s).className='px-3 py-1.5 rounded-full text-[10px] font-black bg-[#ff3b3b]';
+ document.getElementById('basket-sub').classList.toggle('hidden', s!=='basket');
+ document.getElementById('liga').classList.toggle('hidden', s!=='soccer');
+ if(s==='basket') loadBasket(); else load();
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0f1419', paddingTop: 40 },
-  header: { padding: 15, backgroundColor: '#1a242f', flexDirection: 'row', justifyContent: 'space-between' },
-  logo: { color: '#fff', fontSize: 22, fontWeight: 'bold' },
-  tz: { color: '#888', fontSize: 10 },
-  sportsBar: { maxHeight: 50, backgroundColor: '#1a242f', paddingVertical: 8 },
-  sportBtn: { paddingHorizontal: 16, paddingVertical: 6, marginHorizontal: 5, borderRadius: 20, backgroundColor: '#2a3542' },
-  sportBtnActive: { backgroundColor: '#00f8f8' },
-  sportText: { color: '#aaa', fontWeight: 'bold', fontSize: 12 },
-  sportTextActive: { color: '#000' },
-  hoyHeader: { flexDirection: 'row', justifyContent: 'space-between', padding: 15, backgroundColor: '#0f1419' },
-  hoyText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
-  hoySub: { color: '#888', fontSize: 12 },
-  card: { backgroundColor: '#1e2a38', marginHorizontal: 10, marginBottom: 10, borderRadius: 12, padding: 12 },
-  matchRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  team: { flex: 1, alignItems: 'center' },
-  teamName: { color: '#fff', fontSize: 13, textAlign: 'center' },
-  score: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
-  status: { color: '#00f8f8', fontSize: 10, marginTop: 8 },
-  league: { color: '#888', fontSize: 10, marginBottom: 8 },
-  bottomNav: { flexDirection: 'row', backgroundColor: '#1a242f', paddingVertical: 10, borderTopWidth: 1, borderColor: '#222' },
-  navBtn: { flex: 1, alignItems: 'center' },
-  navText: { color: '#888', fontSize: 10, marginTop: 2 },
-  center: { flex: 1, justifyContent: 'center', alignItems: 'center', color: '#888', textAlign: 'center', marginTop: 50 }
-});
+function setBasketLiga(l){
+ basketLiga=l;
+ document.querySelectorAll('[id^=b-]').forEach(b=>b.className='px-3 py-1 rounded-full text-[9px] font-bold bg-[#1e2735] text-gray-400');
+ document.getElementById('b-'+l).className='px-3 py-1 rounded-full text-[9px] font-bold bg-[#ff3b3b] text-white';
+ loadBasket();
+}
+function setTab(t){
+ tab=t;
+ document.getElementById('t-p').className = t==='p'?'flex-1 py-3 border-b-2 border-[#ff3b3b] text-white':'flex-1 py-3 border-b-2 border-transparent text-gray-500';
+ document.getElementById('t-f').className = t==='f'?'flex-1 py-3 border-b-2 border-[#ff3b3b] text-white':'flex-1 py-3 border-b-2 border-transparent text-gray-500';
+ document.getElementById('t-t').className = t==='t'?'flex-1 py-3 border-b-2 border-[#ff3b3b] text-white':'flex-1 py-3 border-b-2 border-transparent text-gray-500';
+ document.getElementById('list').classList.toggle('hidden', t!=='p');
+ document.getElementById('future').classList.toggle('hidden', t!=='f');
+ document.getElementById('table').classList.toggle('hidden', t!=='t');
+ if(t==='f') loadFuture(); else if(t==='t') loadTable(); else load();
+}
+async function fetchESPN(url){
+ try{ let r=await fetch(url); return await r.json(); }
+ catch(e){ let proxy=`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`; let r2=await fetch(proxy); let j2=await r2.json(); return JSON.parse(j2.contents); }
+}
+// MOD #1: Hora local automatica sin mostrar America/Guayaquil
+function fmtLocal(iso){
+ if(!iso) return 'Por definir';
+ let d=new Date(iso);
+ return d.toLocaleString('es-EC', {weekday:'short', day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit', timeZone: userTZ});
+}
+async function load(){
+ const list=document.getElementById('list');
+ const info=document.getElementById('info');
+ list.innerHTML='<div class="py-8 text-center text-gray-400 text-[11px]"><i class="fa-solid fa-spinner fa-spin"></i> Cargando...</div>';
+ let liga=document.getElementById('liga').value;
+ let data=await fetchESPN(`https://site.api.espn.com/apis/site/v2/sports/soccer/${liga}/scoreboard`);
+ let events=data.events||[];
+ if(events.length===0){ let d2=await fetchESPN(`https://site.api.espn.com/apis/site/v2/sports/soccer/${liga}/scoreboard?dates=20260801-20260930`); events=d2.events||[]; }
+ all=events.map(ev=>{
+  const comp=ev.competitions[0]; const h=comp.competitors.find(c=>c.homeAway==='home')||comp.competitors[0]; const a=comp.competitors.find(c=>c.homeAway==='away')||comp.competitors[1];
+  return {date:comp.date, h:h.team.displayName, a:a.team.displayName, hs:h.score, as:a.score, live:comp.status.type.state==='in', detail:comp.status.type.shortDetail, logoH:h.team.logo, logoA:a.team.logo, search:`${h.team.displayName} ${a.team.displayName}`.toLowerCase()};
+ });
+ info.innerText=`${all.length} partidos • ${liga.toUpperCase()}`;
+ render(all, 'list');
+}
+async function loadFuture(){
+ const c=document.getElementById('future');
+ const info=document.getElementById('info');
+ c.innerHTML='<div class="py-8 text-center text-gray-400 text-[11px]"><i class="fa-solid fa-spinner fa-spin"></i> Cargando fixture completo...</div>';
+ let liga=document.getElementById('liga').value;
+ let urls=[
+  `https://site.api.espn.com/apis/site/v2/sports/soccer/${liga}/scoreboard?dates=20260801-20260930`,
+  `https://site.api.espn.com/apis/site/v2/sports/soccer/${liga}/scoreboard?dates=20261001-20261231`,
+  `https://site.api.espn.com/apis/site/v2/sports/soccer/${liga}/scoreboard?dates=20270101-20270531`
+ ];
+ let allEvs=[];
+ for(let u of urls){ try{ let d=await fetchESPN(u); allEvs=allEvs.concat(d.events||[]); }catch(e){} }
+ allFuture=allEvs.map(ev=>{
+  const comp=ev.competitions[0]; const h=comp.competitors.find(c=>c.homeAway==='home')||comp.competitors[0]; const a=comp.competitors.find(c=>c.homeAway==='away')||comp.competitors[1];
+  return {date:comp.date, h:h.team.displayName, a:a.team.displayName, logoH:h.team.logo, logoA:a.team.logo, search:`${h.team.displayName} ${a.team.displayName}`.toLowerCase()};
+ }).sort((a,b)=> new Date(a.date)-new Date(b.date));
+ info.innerText=`Fixture: ${allFuture.length} partidos futuros • ${liga.toUpperCase()}`;
+ let byMonth={}; allFuture.forEach(m=>{ let k=new Date(m.date).toLocaleString('es-EC',{month:'long', year:'numeric', timeZone:userTZ}); if(!byMonth[k]) byMonth[k]=[]; byMonth[k].push(m); });
+ c.innerHTML=Object.entries(byMonth).map(([month, games])=>`<div class="mb-3"><div class="text-[10px] font-black text-[#ff3b3b] mb-1 uppercase">${month}</div>${games.map(i=>`<div class="bg-[#1e2735] p-2.5 rounded-xl border border-gray-700/20 mb-1.5 flex items-center justify-between"><div class="flex items-center gap-2 flex-1"><img src="${i.logoH}" class="w-5 h-5 bg-white rounded-full"/><span class="text-[11px] font-bold truncate">${i.h}</span></div><div class="text-center"><div class="text-[9px] text-gray-300">${fmtLocal(i.date)}</div><div class="text-[8px] text-gray-500">vs</div></div><div class="flex items-center gap-2 flex-1 justify-end"><span class="text-[11px] font-bold truncate">${i.a}</span><img src="${i.logoA}" class="w-5 h-5 bg-white rounded-full"/></div></div>`).join('')}</div>`).join('');
+}
+async function loadBasket(){
+ const list=document.getElementById('list');
+ const info=document.getElementById('info');
+ list.innerHTML='<div class="py-8 text-center text-gray-400">Cargando Basket...</div>';
+ let url = basketLiga==='nba'? `https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard` : basketLiga==='wnba'? `https://site.api.espn.com/apis/site/v2/sports/basketball/wnba/scoreboard` : basketLiga==='euro'? `https://site.api.espn.com/apis/site/v2/sports/basketball/euroleague/scoreboard` : `https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/scoreboard`;
+ let data=await fetchESPN(url);
+ let events=data.events||[];
+ all=events.map(ev=>{ const comp=ev.competitions[0]; const h=comp.competitors.find(c=>c.homeAway==='home'); const a=comp.competitors.find(c=>c.homeAway==='away'); return {h:h.team.displayName, a:a.team.displayName, hs:h.score, as:a.score, logoH:h.team.logo, logoA:a.team.logo, date:comp.date, live:comp.status.type.state==='in', detail:comp.status.type.shortDetail, search:`${h.team.displayName} ${a.team.displayName}`.toLowerCase()}; });
+ info.innerText=`${basketLiga.toUpperCase()} • ${all.length} partidos`;
+ render(all, 'list');
+}
+function render(arr, id){
+ const c=document.getElementById(id);
+ c.innerHTML=arr.map(i=>`<div class="bg-[#1e2735] p-3 rounded-xl border ${i.live?'border-green-500/40':'border-gray-700/20'}"><div class="flex items-center justify-between"><div class="flex items-center gap-2 flex-1"><img src="${i.logoH}" class="w-7 h-7 bg-white rounded-full p-0.5"/><span class="text-[11px] font-bold truncate">${i.h}</span><b class="ml-auto">${i.hs??''}</b></div><div class="mx-2 text-[8px] px-2 py-1 rounded-full ${i.live?'bg-red-500 animate-pulse text-white':'bg-[#0f141e] text-gray-400'}">${i.live?'LIVE':(i.detail||'VS')}</div><div class="flex items-center gap-2 flex-1 justify-end"><b>${i.as??''}</b><span class="text-[11px] font-bold truncate">${i.a}</span><img src="${i.logoA}" class="w-7 h-7 bg-white rounded-full p-0.5"/></div></div><div class="text-[9px] text-gray-400 mt-1.5 text-center">${i.date?fmtLocal(i.date):''}</div></div>`).join('');
+}
+async function loadTable(){
+ const c=document.getElementById('table');
+ c.innerHTML='<div class="py-8 text-center text-[11px]">Cargando tabla...</div>';
+ let liga=document.getElementById('liga').value;
+ let data=await fetchESPN(`https://site.api.espn.com/apis/site/v2/sports/soccer/${liga}/standings`);
+ let html=''; (data.children||[]).forEach(g=>{ html+=`<div class="bg-[#1e2735] rounded-xl overflow-hidden mb-3"><div class="p-2 bg-[#0f141e] text-[11px] font-black">${g.name}</div>${(g.standings?.entries||[]).map((e,i)=>`<div class="flex items-center gap-2 p-2.5 border-b border-gray-800/30 text-[11px]"><span class="w-4 text-gray-500">${i+1}</span><img src="${e.team.logos?.[0]?.href}" class="w-5 h-5 bg-white rounded-full"/><span class="flex-1">${e.team.displayName}</span><span>${e.stats?.find(s=>s.name==='points')?.value||0} pts</span></div>`).join('')}</div>`; });
+ c.innerHTML=html||'Tabla no disponible';
+}
+function filter(){ let q=document.getElementById('q').value.toLowerCase(); render(all.filter(x=>x.search.includes(q)), 'list'); }
+load();
+</script>
+</body>
+</html>
