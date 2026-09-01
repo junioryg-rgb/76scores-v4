@@ -1,119 +1,95 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>76Scores - Real API</title>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>76Scores 2026/27</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,sans-serif}
 body{background:#0f1419;color:#fff;padding-bottom:80px}
-.header{background:#1a222c;padding:15px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:20}
-.header b{font-size:18px}
-.back{cursor:pointer;background:#253141;padding:6px 12px;border-radius:8px;font-size:13px}
-.league-item{background:#1e2a36;padding:16px;margin:8px 10px;border-radius:14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:.2s}
-.league-item:active{transform:scale(.98)}
-.tabs{display:flex;background:#1a222c;padding:6px;gap:6px;position:sticky;top:53px;z-index:10}
-.tab{flex:1;padding:11px;text-align:center;border-radius:9px;background:#253141;cursor:pointer;font-size:14px;font-weight:600}
+.header{background:#1a222c;padding:14px 15px;display:flex;justify-content:space-between;position:sticky;top:0;z-index:20}
+.back{background:#253141;padding:6px 12px;border-radius:8px;cursor:pointer}
+.league-item{background:#1e2a36;padding:16px;margin:8px 10px;border-radius:14px;display:flex;justify-content:space-between;cursor:pointer}
+.tabs{display:flex;background:#1a222c;padding:6px;gap:6px;position:sticky;top:50px}
+.tab{flex:1;padding:11px;text-align:center;border-radius:9px;background:#253141;cursor:pointer;font-weight:700}
 .tab.active{background:#2e8bff}
-.match-card{background:#1e2a36;margin:8px 10px;padding:14px;border-radius:12px;display:flex;align-items:center;justify-content:space-between}
-.team{width:36%;display:flex;align-items:center;gap:6px;font-size:14px}
-.team.right{justify-content:flex-end;text-align:right}
-.team img{width:22px;height:22px;object-fit:contain}
-.score{background:#0f1419;padding:8px 12px;border-radius:8px;min-width:78px;text-align:center}
-.score b{font-size:15px}
-.live{color:#ff3b30;font-size:10px;font-weight:800}
+.match-card{background:#1e2a36;margin:8px 10px;padding:14px;border-radius:12px;display:flex;justify-content:space-between;align-items:center}
+.team{width:35%;display:flex;align-items:center;gap:6px;font-size:13px}
+.team.right{justify-content:flex-end}
+.team img{width:22px;height:22px}
+.score{background:#0f1419;padding:8px 10px;border-radius:8px;min-width:85px;text-align:center}
 .table{width:100%;border-collapse:collapse}
-.table th{padding:10px 8px;font-size:11px;color:#8a9bb0;background:#1a222c;text-align:left;position:sticky;top:100px}
-.table td{padding:11px 8px;border-bottom:1px solid #1f2b38;font-size:13px}
-.table td b{color:#fff}
-.loader{padding:50px 20px;text-align:center;color:#8a9bb0}
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#1a222c;display:flex;justify-content:space-around;padding:10px 0;border-top:1px solid #253141}
-.nav-item{color:#8a9bb0;font-size:11px;display:flex;flex-direction:column;align-items:center;gap:2px}
-.nav-item.active{color:#2e8bff}
+.table th{padding:10px 6px;font-size:11px;color:#8a9bb0;background:#1a222c;text-align:center;position:sticky;top:97px}
+.table td{padding:10px 6px;border-bottom:1px solid #1f2b38;font-size:13px;text-align:center}
+.table td:nth-child(2){text-align:left;display:flex;align-items:center;gap:6px}
+.loader{padding:40px;text-align:center;color:#8a9bb0}
 .hidden{display:none}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#1a222c;display:flex;justify-content:space-around;padding:10px 0;border-top:1px solid #253141}
 </style>
 </head>
 <body>
-<div class="header"><b id="title">76Scores</b><div id="backBtn" class="back hidden" onclick="goHome()">‹ Volver</div></div>
-<div id="viewHome"><div id="leagueList"></div></div>
-<div id="viewLiga" class="hidden">
-<div class="tabs"><div class="tab active" id="tabP" onclick="switchTab('p')">Partidos</div><div class="tab" id="tabT" onclick="switchTab('t')">Tabla</div></div>
-<div id="matches" class="loader">Cargando partidos reales...</div>
-<div id="tableWrap" class="hidden"><table class="table" id="ptable"></table></div>
+<div class="header"><b id="title">76Scores 2026/27 - EN VIVO</b><div id="backBtn" class="back hidden" onclick="goHome()">‹ Volver</div></div>
+<div id="home"><div id="list"></div></div>
+<div id="ligaView" class="hidden">
+<div class="tabs"><div class="tab active" id="tP" onclick="sw('p')">Partidos 2026/27</div><div class="tab" id="tT" onclick="sw('t')">Tabla 2026/27</div></div>
+<div id="matches" class="loader">Cargando...</div>
+<div id="tableW" class="hidden"><table class="table" id="ptable"></table></div>
 </div>
-<div class="bottom-nav"><div class="nav-item active">🏆<br>Ligas</div></div>
+<div class="bottom-nav"><div>🏆 Temporada 2026/27</div></div>
 <script>
-const API_KEY = "5ff0e0b271ee58df90e934cee0ed78c7";
-const ligas = [
-{id:39,name:"Premier League",flag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿",season:2024},
-{id:140,name:"La Liga",flag:"🇪🇸",season:2024},
-{id:135,name:"Serie A",flag:"🇮🇹",season:2024},
-{id:78,name:"Bundesliga",flag:"🇩🇪",season:2024},
-{id:61,name:"Ligue 1",flag:"🇫🇷",season:2024},
-{id:242,name:"LigaPro Ecuador",flag:"🇪🇨",season:2025}
+const KEY="5ff0e0b271ee58df90e934cee0ed78c7";
+// AHORA 2026/27 - Septiembre 2026
+const LIGAS=[
+{id:39,name:"Premier League",flag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿",season:2026},
+{id:140,name:"La Liga",flag:"🇪🇸",season:2026},
+{id:135,name:"Serie A",flag:"🇮🇹",season:2026},
+{id:78,name:"Bundesliga",flag:"🇩🇪",season:2026},
+{id:61,name:"Ligue 1",flag:"🇫🇷",season:2026},
+{id:242,name:"LigaPro Ecuador",flag:"🇪🇨",season:2026}
 ];
-let ligaActual=null;
-function renderHome(){
-document.getElementById('leagueList').innerHTML = ligas.map(l=>`<div class="league-item" onclick="openLiga(${l.id})"><div style="display:flex;align-items:center;gap:10px"><span style="font-size:20px">${l.flag}</span><b>${l.name}</b></div><span>›</span></div>`).join('');
-}
-function goHome(){
-document.getElementById('viewHome').classList.remove('hidden');
-document.getElementById('viewLiga').classList.add('hidden');
-document.getElementById('backBtn').classList.add('hidden');
-document.getElementById('title').innerText='76Scores';
-}
-async function openLiga(id){
-ligaActual = ligas.find(x=>x.id===id);
-document.getElementById('viewHome').classList.add('hidden');
-document.getElementById('viewLiga').classList.remove('hidden');
-document.getElementById('backBtn').classList.remove('hidden');
-document.getElementById('title').innerText=ligaActual.flag+" "+ligaActual.name;
-switchTab('p');
-loadMatches();
-loadTable();
-}
-function switchTab(t){
-document.getElementById('tabP').classList.toggle('active', t==='p');
-document.getElementById('tabT').classList.toggle('active', t==='t');
-document.getElementById('matches').classList.toggle('hidden', t!=='p');
-document.getElementById('tableWrap').classList.toggle('hidden', t!=='t');
-}
+let cur=null;
+function render(){document.getElementById('list').innerHTML=LIGAS.map(l=>`<div class="league-item" onclick="openL(${l.id})"><div>${l.flag} <b>${l.name}</b> <span style="color:#2e8bff;font-size:11px">2026/27 • ACTUAL</span></div><div>›</div></div>`).join('');}
+function goHome(){document.getElementById('home').classList.remove('hidden');document.getElementById('ligaView').classList.add('hidden');document.getElementById('backBtn').classList.add('hidden');document.getElementById('title').innerText='76Scores 2026/27';}
+async function openL(id){cur=LIGAS.find(x=>x.id===id);document.getElementById('home').classList.add('hidden');document.getElementById('ligaView').classList.remove('hidden');document.getElementById('backBtn').classList.remove('hidden');document.getElementById('title').innerText=cur.flag+' '+cur.name+' 26/27';sw('p');loadMatches();loadTable();}
+function sw(t){document.getElementById('tP').classList.toggle('active',t==='p');document.getElementById('tT').classList.toggle('active',t==='t');document.getElementById('matches').classList.toggle('hidden',t!=='p');document.getElementById('tableW').classList.toggle('hidden',t!=='t');}
 async function loadMatches(){
-const box=document.getElementById('matches');
-box.classList.remove('hidden');
-box.innerHTML='<div class="loader">⚽ Cargando partidos reales de '+ligaActual.name+'...</div>';
+let box=document.getElementById('matches');
+box.innerHTML='<div class="loader">⚽ Conectando a API-Sports 2026/27...<br><small>Temporada actual Sept 2026</small></div>';
 try{
-let season=ligaActual.season;
-let url=`https://v3.football.api-sports.io/fixtures?league=${ligaActual.id}&season=${season}&next=20`;
-let r=await fetch(url,{headers:{'x-apisports-key':API_KEY}});
+let r=await fetch(`https://v3.football.api-sports.io/fixtures?league=${cur.id}&season=${cur.season}`,{headers:{'x-apisports-key':KEY}});
 let j=await r.json();
-let fixtures=j.response;
-if(!fixtures || fixtures.length===0){
-let r2=await fetch(`https://v3.football.api-sports.io/fixtures?league=${ligaActual.id}&season=${season}&last=20`,{headers:{'x-apisports-key':API_KEY}});
-let j2=await r2.json();
-fixtures=j2.response;
+if(j.errors && Object.keys(j.errors).length>0){box.innerHTML='<div class="loader">API Error: '+JSON.stringify(j.errors)+'<br><br>Si dice 2026 no disponible, la API aún no tiene 26/27, usará 2025/26</div>';
+// fallback a 2025 si 2026 no existe
+let r2=await fetch(`https://v3.football.api-sports.io/fixtures?league=${cur.id}&season=2025`,{headers:{'x-apisports-key':KEY}});
+let j2=await r2.json(); j=j2;
 }
-if(!fixtures || fixtures.length===0){ box.innerHTML='<div class="loader">No hay partidos en esta fecha para '+ligaActual.name+'</div>'; return; }
-box.innerHTML=fixtures.map(f=>{
-let h=f.teams.home; let a=f.teams.away;
-let gh=f.goals.home; let ga=f.goals.away;
-let status=f.fixture.status.short;
-let hora=new Date(f.fixture.date).toLocaleString('es-EC',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
-let marcador = status==='NS'? `<div style="font-size:12px;color:#8a9bb0">${hora}</div>` : `<b>${gh??0} - ${ga??0}</b><div style="font-size:10px;color:${status==='FT'?'#8a9bb0':'#ff3b30'}">${status==='FT'?'Final':status==='1H'||status==='2H'?'EN VIVO '+f.goals.home+'-'+f.goals.away:status}</div>`;
-let live = (status==='1H'||status==='2H'||status==='HT')? '<div class="live">● LIVE</div>' : '';
-return `<div class="match-card"><div class="team"><img src="${h.logo}">${h.name}</div><div class="score">${live}${marcador}</div><div class="team right">${a.name}<img src="${a.logo}"></div></div>`;
-}).join('');
-}catch(e){ box.innerHTML='<div class="loader">Error API: '+e.message+'<br>Verifica que tu key esté activa</div>';}
+let fix=j.response.sort((a,b)=> new Date(a.fixture.date)-new Date(b.fixture.date));
+let ahora=new Date(); let idx=fix.findIndex(f=> new Date(f.fixture.date)>=ahora);
+let slice= fix.slice(Math.max(0,idx-3), idx+12); if(slice.length===0) slice=fix.slice(-15);
+box.innerHTML=slice.map(f=>{
+let h=f.teams.home,a=f.teams.away;
+let s=f.fixture.status.short;
+let fecha=new Date(f.fixture.date).toLocaleDateString('es-EC',{day:'2-digit',month:'short'});
+let hora=new Date(f.fixture.date).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+let marcador=s==='NS'?`<div>${fecha} ${hora}</div><div style="font-size:10px;color:#8a9bb0">Por jugar</div>`:`<b>${f.goals.home??0}-${f.goals.away??0}</b><div style="font-size:10px">${s}</div>`;
+return `<div class="match-card"><div class="team"><img src="${h.logo}">${h.name}</div><div class="score">${marcador}</div><div class="team right">${a.name}<img src="${a.logo}"></div></div>`;
+}).join('')||'<div class="loader">Aún no hay fixtures 2026/27 - temporada por iniciar</div>';
+}catch(e){box.innerHTML='Error: '+e.message;}
 }
 async function loadTable(){
 try{
-let r=await fetch(`https://v3.football.api-sports.io/standings?league=${ligaActual.id}&season=${ligaActual.season}`,{headers:{'x-apisports-key':API_KEY}});
+let r=await fetch(`https://v3.football.api-sports.io/standings?league=${cur.id}&season=${cur.season}`,{headers:{'x-apisports-key':KEY}});
 let j=await r.json();
-let standings=j.response[0]?.league?.standings[0];
-if(!standings){ document.getElementById('ptable').innerHTML='<tr><td>Tabla no disponible</td></tr>'; return; }
-document.getElementById('ptable').innerHTML=`<tr><th>#</th><th>Equipo</th><th>PJ</th><th>G</th><th>Pts</th></tr>`+standings.map(s=>`<tr style="${s.rank<=4?'border-left:3px solid #2e8bff':''}"><td>${s.rank}</td><td style="display:flex;align-items:center;gap:6px"><img src="${s.team.logo}" width="18">${s.team.name}</td><td>${s.all.played}</td><td>${s.all.win}</td><td><b>${s.points}</b></td></tr>`).join('');
+let st=j.response[0]?.league?.standings[0];
+if(!st || st.length===0){
+// fallback 2025 si 2026 no existe aún
+let r2=await fetch(`https://v3.football.api-sports.io/standings?league=${cur.id}&season=2025`,{headers:{'x-apisports-key':KEY}});
+let j2=await r2.json(); st=j2.response[0]?.league?.standings[0];
+}
+if(!st){document.getElementById('ptable').innerHTML='<tr><td>Tabla 2026/27 aún no generada (temporada iniciando Sept 2026)</td></tr>'; return;}
+document.getElementById('ptable').innerHTML=`<tr><th>#</th><th>Equipo</th><th>PJ</th><th>DG</th><th>Pts</th></tr>`+st.map(s=>`<tr><td>${s.rank}</td><td><img src="${s.team.logo}" width="18"> ${s.team.name}</td><td>${s.all.played}</td><td>${s.goalsDiff}</td><td><b>${s.points}</b></td></tr>`).join('');
 }catch(e){}
 }
-renderHome();
+render();
 </script>
 </body>
 </html>
