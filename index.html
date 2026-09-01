@@ -8,7 +8,7 @@
 <style>.no-scrollbar::-webkit-scrollbar{display:none}.no-scrollbar{-ms-overflow-style:none;scrollbar-width:none}</style>
 </head>
 <body class="bg-[#0a0e14] text-white flex justify-center">
-<div class="w-full max-w-[430px] bg-[#12171f] min-h-screen flex flex-col pb-[75px]">
+<div class="w-full max-w-[430px] bg-[#12171f] min-h-screen flex flex-col pb-[80px]">
 
 <header class="p-3 bg-[#1a212e] sticky top-0 z-30">
   <h1 class="font-black text-[18px]">76<span class="text-[#ff3b3b]">SCORES</span></h1>
@@ -28,27 +28,27 @@
 </div>
 
 <main class="p-3 flex-1">
-  <!-- LIGAS VIEW - AHORA ES LA PRINCIPAL Y MUESTRA PARTIDOS AQUI MISMO -->
-  <div id="ligas-view" class="">
+  <div id="ligas-view">
     <div id="ligas-list"></div>
-    <!-- Partidos de la liga seleccionada se muestran aqui sin salir de LIGAS -->
-    <div id="liga-selected-header" class="hidden mt-4 bg-[#ff3b3b] p-2 rounded-lg text-[11px] font-bold flex justify-between"><span id="liga-selected-name"></span><span id="liga-selected-count"></span></div>
+    <div id="liga-selected-header" class="hidden mt-4 bg-[#facc15] text-black p-2.5 rounded-lg text-[11px] font-black flex justify-between">
+      <span id="liga-selected-name"></span><span id="liga-selected-count" class="bg-black text-[#facc15] px-2 py-0.5 rounded-full text-[9px]"></span>
+    </div>
     <input id="q" oninput="filter()" placeholder="🔍 Buscar equipo en esta liga..." class="hidden w-full bg-[#1e2735] text-[12px] rounded-full px-4 py-2.5 my-3 outline-none"/>
     <div id="list" class="space-y-2 mt-2"></div>
   </div>
-
-  <div id="fav-view" class="hidden text-[11px] text-gray-400 text-center py-10">Tus favoritos ⭐<br>Marca equipos con la estrella</div>
+  <div id="fav-view" class="hidden text-[11px] text-gray-400 text-center py-10">Tus favoritos ⭐</div>
   <div id="noticias-view" class="hidden text-[11px] text-gray-400 text-center py-10">Noticias pronto 📰</div>
   <div id="config-view" class="hidden p-3 bg-[#1e2735] rounded-xl text-[11px]">Configuración<br>Zona horaria automática activa<br><br>76SCORES v1.0</div>
 </main>
 
-<!-- ABAJO SOLO 4 BOTONES, SIN HOY -->
+<!-- ABAJO 4 BOTONES - AMARILLO MEDIO AL SELECCIONAR -->
 <div class="fixed bottom-0 w-full max-w-[430px] bg-[#1a212e] border-t border-gray-800 flex justify-around py-2.5 z-40">
-  <button onclick="setBottom('fav')" id="bb-fav" class="flex flex-col items-center text-gray-500"><i class="fa-regular fa-star text-[16px]"></i><span class="text-[8px] mt-1">FAVORITOS</span></button>
-  <button onclick="setBottom('ligas')" id="bb-ligas" class="flex flex-col items-center text-[#ff3b3b]"><i class="fa-solid fa-trophy text-[16px]"></i><span class="text-[8px] mt-1">LIGAS</span></button>
-  <button onclick="setBottom('noticias')" id="bb-noticias" class="flex flex-col items-center text-gray-500"><i class="fa-regular fa-newspaper text-[16px]"></i><span class="text-[8px] mt-1">NOTICIAS</span></button>
-  <button onclick="setBottom('config')" id="bb-config" class="flex flex-col items-center text-gray-500"><i class="fa-solid fa-gear text-[16px]"></i><span class="text-[8px] mt-1">CONFIG</span></button>
+  <button onclick="setBottom('fav')" id="bb-fav" class="flex flex-col items-center text-gray-500 transition-colors"><i class="fa-regular fa-star text-[18px]"></i><span class="text-[8px] mt-1 font-bold">FAVORITOS</span></button>
+  <button onclick="setBottom('ligas')" id="bb-ligas" class="flex flex-col items-center text-[#facc15] transition-colors"><i class="fa-solid fa-trophy text-[18px]"></i><span class="text-[8px] mt-1 font-bold">LIGAS</span></button>
+  <button onclick="setBottom('noticias')" id="bb-noticias" class="flex flex-col items-center text-gray-500 transition-colors"><i class="fa-regular fa-newspaper text-[18px]"></i><span class="text-[8px] mt-1 font-bold">NOTICIAS</span></button>
+  <button onclick="setBottom('config')" id="bb-config" class="flex flex-col items-center text-gray-500 transition-colors"><i class="fa-solid fa-gear text-[18px]"></i><span class="text-[8px] mt-1 font-bold">CONFIG</span></button>
 </div>
+
 </div>
 
 <script>
@@ -71,16 +71,24 @@ const PAISES = [
 ];
 
 function setSport(s){ sport=s; document.querySelectorAll('[id^=s-]').forEach(b=>b.className='whitespace-nowrap px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400'); document.getElementById('s-'+s).className='whitespace-nowrap px-3 py-1.5 rounded-full text-[10px] font-black bg-[#ff3b3b]'; if(currentLiga) load(currentLiga); }
+
 function setBottom(b){
  bottom=b;
- document.querySelectorAll('[id^=bb-]').forEach(el=>{el.classList.remove('text-[#ff3b3b]'); el.classList.add('text-gray-500')});
- document.getElementById('bb-'+b).classList.add('text-[#ff3b3b]');
+ document.querySelectorAll('[id^=bb-]').forEach(el=>{
+   el.classList.remove('text-[#facc15]');
+   el.classList.add('text-gray-500');
+ });
+ const active = document.getElementById('bb-'+b);
+ active.classList.remove('text-gray-500');
+ active.classList.add('text-[#facc15]');
+
  document.getElementById('ligas-view').classList.toggle('hidden', b!=='ligas');
  document.getElementById('fav-view').classList.toggle('hidden', b!=='fav');
  document.getElementById('noticias-view').classList.toggle('hidden', b!=='noticias');
  document.getElementById('config-view').classList.toggle('hidden', b!=='config');
  document.getElementById('main-title').innerText = b.toUpperCase();
 }
+
 async function fetchESPN(url){ try{let r=await fetch(url); return await r.json();}catch(e){let proxy=`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`; let r2=await fetch(proxy); let j2=await r2.json(); return JSON.parse(j2.contents);} }
 function fmtLocal(iso){ if(!iso) return ''; let d=new Date(iso); return d.toLocaleString('es-EC',{hour:'2-digit', minute:'2-digit', timeZone:userTZ}); }
 
@@ -94,22 +102,20 @@ function loadLigas(){
       <i id="icon-${i}" class="fa-solid fa-chevron-down text-[10px] text-gray-500"></i>
     </button>
     <div id="pais-${i}" class="hidden mt-1 ml-2 space-y-1">
-      ${paisObj.ligas.map(l=>`<button onclick="selectLiga('${l.id}','${l.nombre}')" class="w-full text-left bg-[#12171f] border ${currentLiga===l.id?'border-[#ff3b3b] text-[#ff3b3b]':'border-gray-800'} p-2.5 rounded-lg text-[11px] flex justify-between"><span>${l.nombre}</span><span class="text-[9px]">›</span></button>`).join('')}
+      ${paisObj.ligas.map(l=>`<button onclick="selectLiga('${l.id}','${l.nombre}')" class="w-full text-left bg-[#12171f] border ${currentLiga===l.id?'border-[#facc15] text-[#facc15]':'border-gray-800'} p-2.5 rounded-lg text-[11px] flex justify-between"><span>${l.nombre}</span><span class="text-[9px]">›</span></button>`).join('')}
     </div>
   </div>
  `).join('');
 }
 function togglePais(i){ document.getElementById(`pais-${i}`).classList.toggle('hidden'); document.getElementById(`icon-${i}`).classList.toggle('fa-chevron-down'); document.getElementById(`icon-${i}`).classList.toggle('fa-chevron-up'); }
 
-// AHORA SE QUEDA EN LIGAS Y MUESTRA PARTIDOS AHI MISMO
 async function selectLiga(id,nombre){
  currentLiga=id;
- loadLigas(); // para actualizar borde rojo
+ loadLigas();
  document.getElementById('liga-selected-header').classList.remove('hidden');
- document.getElementById('liga-selected-name').innerText = nombre;
+ document.getElementById('liga-selected-name').innerText = nombre.toUpperCase();
  document.getElementById('q').classList.remove('hidden');
  document.getElementById('q').value='';
- // scroll a los partidos
  document.getElementById('liga-selected-header').scrollIntoView({behavior:'smooth'});
  load(id);
 }
@@ -121,7 +127,7 @@ async function load(ligaId){
  let data=await fetchESPN(`https://site.api.espn.com/apis/site/v2/sports/soccer/${ligaId}/scoreboard`);
  let events=data.events||[];
  all=events.map(ev=>{ const comp=ev.competitions[0]; const h=comp.competitors.find(c=>c.homeAway==='home')||comp.competitors[0]; const a=comp.competitors.find(c=>c.homeAway==='away')||comp.competitors[1]; return {date:comp.date, h:h.team.displayName, a:a.team.displayName, hs:h.score, as:a.score, live:comp.status.type.state==='in', detail:comp.status.type.shortDetail, logoH:h.team.logo, logoA:a.team.logo, search:`${h.team.displayName} ${a.team.displayName}`.toLowerCase()}; });
- document.getElementById('liga-selected-count').innerText = `${all.length} partidos hoy`;
+ document.getElementById('liga-selected-count').innerText = `${all.length} HOY`;
  render(all);
 }
 function render(arr){
