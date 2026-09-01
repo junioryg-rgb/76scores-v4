@@ -2,191 +2,235 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>76SCORES REAL</title>
+<title>76SCORES - FIXTURE COMPLETO</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body class="bg-[#0a0e14] text-white flex justify-center">
-<div class="w-full max-w-[430px] bg-[#12171f] min-h-screen flex flex-col pb-[70px]">
+<div class="w-full max-w-[430px] bg-[#12171f] min-h-screen flex flex-col pb-[75px]">
 
-<header class="p-3 bg-[#1a212e] sticky top-0 z-20">
-  <h1 class="font-black">76<span class="text-[#ff3b3b]">SCORES</span> <span id="status" class="text-[8px] bg-yellow-500 text-black px-2 py-0.5 rounded-full">CARGANDO...</span></h1>
+<header class="p-3 bg-[#1a212e] sticky top-0 z-30">
+  <div class="flex justify-between items-center">
+    <h1 class="font-black">76<span class="text-[#ff3b3b]">SCORES</span></h1>
+    <span id="user-tz" class="text-[8px] bg-[#1e2735] px-2 py-1 rounded-full text-gray-300">Detectando zona horaria...</span>
+  </div>
   <div class="flex gap-1.5 mt-2 overflow-x-auto">
     <button onclick="setSport('soccer')" id="s-soccer" class="px-3 py-1.5 rounded-full text-[10px] font-black bg-[#ff3b3b]">⚽ FÚTBOL</button>
-    <button onclick="setSport('nba')" id="s-nba" class="px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400">🏀 NBA</button>
-    <button onclick="setSport('mlb')" id="s-mlb" class="px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400">⚾ MLB</button>
+    <button onclick="setSport('basket')" id="s-basket" class="px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400">🏀 BASKET</button>
+    <button onclick="setSport('mlb')" id="s-mlb" class="px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400">⚾ BÉISBOL</button>
+    <button onclick="setSport('tenis')" id="s-tenis" class="px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400">🎾 TENIS</button>
+  </div>
+  <!-- Sub-ligas de basket -->
+  <div id="basket-sub" class="hidden flex gap-1.5 mt-2 overflow-x-auto">
+    <button onclick="setBasketLiga('nba')" id="b-nba" class="px-3 py-1 rounded-full text-[9px] font-bold bg-[#ff3b3b]">NBA</button>
+    <button onclick="setBasketLiga('wnba')" id="b-wnba" class="px-3 py-1 rounded-full text-[9px] font-bold bg-[#1e2735]">WNBA</button>
+    <button onclick="setBasketLiga('euro')" id="b-euro" class="px-3 py-1 rounded-full text-[9px] font-bold bg-[#1e2735]">EUROLIGA</button>
+    <button onclick="setBasketLiga('ncb')" id="b-ncb" class="px-3 py-1 rounded-full text-[9px] font-bold bg-[#1e2735]">NCAA</button>
   </div>
 </header>
 
-<div class="flex bg-[#1a212e] text-[10px] font-bold">
-  <button id="t-partidos" onclick="setTab('p')" class="flex-1 py-3 border-b-2 border-[#ff3b3b] text-white">PARTIDOS HOY</button>
-  <button id="t-tabla" onclick="setTab('t')" class="flex-1 py-3 border-b-2 border-transparent text-gray-500">TABLA REAL</button>
+<div class="flex bg-[#1a212e] text-[10px] font-bold sticky top-[88px] z-20">
+  <button id="t-partidos" onclick="setTab('p')" class="flex-1 py-3 border-b-2 border-[#ff3b3b] text-white">PARTIDOS</button>
+  <button id="t-future" onclick="setTab('f')" class="flex-1 py-3 border-b-2 border-transparent text-gray-500">FIXTURE COMPLETO</button>
+  <button id="t-tabla" onclick="setTab('t')" class="flex-1 py-3 border-b-2 border-transparent text-gray-500">TABLA</button>
 </div>
 
 <main class="p-3">
-  <select id="liga" onchange="load()" class="w-full bg-[#1e2735] text-[13px] rounded-xl px-3 py-3 border border-gray-700 mb-2">
-    <option value="ecu.1" selected>🇪🇨 LigaPro Ecuador</option>
+  <select id="liga" onchange="load()" class="w-full bg-[#1e2735] text-[12px] rounded-xl px-3 py-3 border border-gray-700 mb-2">
+    <option value="ecu.1">🇪🇨 LigaPro Ecuador</option>
     <option value="eng.1">🏴󠁧󠁢󠁥󠁮󠁧󠁿 Premier League</option>
     <option value="esp.1">🇪🇸 LaLiga</option>
     <option value="ita.1">🇮🇹 Serie A</option>
     <option value="ger.1">🇩🇪 Bundesliga</option>
-    <option value="uefa.champions">🏆 Champions</option>
+    <option value="fra.1">🇫🇷 Ligue 1</option>
+    <option value="uefa.champions">🏆 Champions League</option>
     <option value="conmebol.libertadores">🏆 Libertadores</option>
-    <option value="arg.1">🇦🇷 Argentina</option>
-    <option value="bra.1">🇧🇷 Brasil</option>
+    <option value="conmebol.sudamericana">🏆 Sudamericana</option>
+    <option value="arg.1">🇦🇷 Liga Argentina</option>
+    <option value="bra.1">🇧🇷 Brasileirao</option>
     <option value="mex.1">🇲🇽 Liga MX</option>
+    <option value="usa.1">🇺🇸 MLS</option>
   </select>
-  <div id="info" class="text-[10px] text-gray-400 bg-[#1e2735] p-2 rounded-lg mb-2">Iniciando...</div>
-  <input id="q" oninput="filter()" placeholder="Buscar equipo..." class="w-full bg-[#1e2735] text-[12px] rounded-full px-4 py-2.5 mb-3 outline-none"/>
+
+  <div id="info" class="text-[10px] text-gray-300 bg-[#1e2735] p-2 rounded-lg mb-2 flex justify-between">
+    <span id="info-text">Cargando...</span><span id="info-count"></span>
+  </div>
+  <input id="q" oninput="filter()" placeholder="🔍 Buscar equipo..." class="w-full bg-[#1e2735] text-[12px] rounded-full px-4 py-2.5 mb-3 outline-none"/>
   <div id="list" class="space-y-2"></div>
+  <div id="future" class="hidden space-y-2"></div>
   <div id="table" class="hidden"></div>
 </main>
 </div>
 
 <script>
-let all=[], sport='soccer', tab='p';
-const KEY="5ff0e0b271ee58df90e934cee0ed78c7";
+let all=[], allFuture=[], sport='soccer', basketLiga='nba', tab='p';
+let userTZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
+document.getElementById('user-tz').innerText='🕒 '+userTZ;
 
 function setSport(s){
  sport=s;
  document.querySelectorAll('[id^=s-]').forEach(b=>b.className='px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400');
  document.getElementById('s-'+s).className='px-3 py-1.5 rounded-full text-[10px] font-black bg-[#ff3b3b]';
- load();
+ document.getElementById('basket-sub').classList.toggle('hidden', s!=='basket');
+ document.getElementById('liga').classList.toggle('hidden', s!=='soccer');
+ if(s==='basket') loadBasket(); else load();
+}
+function setBasketLiga(l){
+ basketLiga=l;
+ document.querySelectorAll('[id^=b-]').forEach(b=>b.className='px-3 py-1 rounded-full text-[9px] font-bold bg-[#1e2735] text-gray-400');
+ document.getElementById('b-'+l).className='px-3 py-1 rounded-full text-[9px] font-bold bg-[#ff3b3b] text-white';
+ loadBasket();
 }
 function setTab(t){
  tab=t;
- document.getElementById('t-partidos').className=t==='p'?'flex-1 py-3 border-b-2 border-[#ff3b3b] text-white':'flex-1 py-3 border-b-2 border-transparent text-gray-500';
- document.getElementById('t-tabla').className=t==='t'?'flex-1 py-3 border-b-2 border-[#ff3b3b] text-white':'flex-1 py-3 border-b-2 border-transparent text-gray-500';
+ ['partidos','future','tabla'].forEach(x=>{
+  document.getElementById('t-'+x).className = (x[0]===t[0])?'flex-1 py-3 border-b-2 border-[#ff3b3b] text-white':'flex-1 py-3 border-b-2 border-transparent text-gray-500';
+ });
  document.getElementById('list').classList.toggle('hidden', t!=='p');
+ document.getElementById('future').classList.toggle('hidden', t!=='f');
  document.getElementById('table').classList.toggle('hidden', t!=='t');
- document.getElementById('q').classList.toggle('hidden', t!=='p');
- if(t==='t') loadTable(); else load();
+ document.getElementById('q').classList.toggle('hidden', t==='t');
+ if(t==='f') loadFuture(); else if(t==='t') loadTable(); else load();
 }
 
-// FUNCION QUE SI CONECTA - CON PROXY PARA CORS
 async function fetchESPN(url){
  try{
   let r=await fetch(url);
-  if(!r.ok) throw new Error('direct fail');
   return await r.json();
  }catch(e){
-  console.log('Probando con proxy...', e.message);
-  // proxy para saltar CORS de StackBlitz
   let proxy=`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
-  let r2=await fetch(proxy);
-  let j2=await r2.json();
-  return JSON.parse(j2.contents);
+  let r2=await fetch(proxy); let j2=await r2.json(); return JSON.parse(j2.contents);
  }
+}
+
+function fmtLocal(iso){
+ if(!iso) return 'Por definir';
+ let d=new Date(iso);
+ // hora local del usuario
+ let local = d.toLocaleString('es-EC', {weekday:'short', day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit', timeZone: userTZ, timeZoneName:'short'});
+ // hora ET para referencia
+ let et = d.toLocaleString('es-EC', {hour:'2-digit', minute:'2-digit', timeZone:'America/New_York', timeZoneName:'short'});
+ return `${local} <span class="text-[9px] text-gray-500">(${et} ET)</span>`;
 }
 
 async function load(){
  const list=document.getElementById('list');
- const info=document.getElementById('info');
- const status=document.getElementById('status');
- list.innerHTML='<div class="py-10 text-center text-gray-400"><i class="fa-solid fa-spinner fa-spin"></i> Cargando ligas reales...</div>';
- status.innerText='CONECTANDO ESPN...';
- status.className='text-[8px] bg-yellow-500 text-black px-2 py-0.5 rounded-full';
- try{
-  let liga=document.getElementById('liga').value;
-  let url='';
-  if(sport==='soccer') url=`https://site.api.espn.com/apis/site/v2/sports/soccer/${liga}/scoreboard`;
-  else if(sport==='nba') url=`https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard`;
-  else if(sport==='mlb') url=`https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard`;
-
-  info.innerText=`Pidiendo: ${url}`;
-  let data=await fetchESPN(url);
-  console.log(data);
-
-  let events=data.events||[];
-  if(events.length===0){
-    info.innerText=`0 partidos hoy en ${liga}. Mostrando últimos disponibles.`;
-    // si hoy no hay, ESPN devuelve vacio, mostramos mensaje con datos igual
-  } else {
-    info.innerText=`${events.length} partidos encontrados REAL en ${liga} - ${new Date().toLocaleString('es-EC')}`;
-  }
-
-  all=events.map(ev=>{
-    const comp=ev.competitions[0];
-    const home=comp.competitors.find(c=>c.homeAway==='home')||comp.competitors[0];
-    const away=comp.competitors.find(c=>c.homeAway==='away')||comp.competitors[1];
-    return {
-      h: home.team.displayName||home.team.abbreviation,
-      a: away.team.displayName||away.team.abbreviation,
-      hs: home.score, as: away.score,
-      live: comp.status.type.state==='in',
-      detail: comp.status.type.shortDetail||comp.status.type.detail,
-      logoH: home.team.logo,
-      logoA: away.team.logo,
-      search: `${home.team.displayName} ${away.team.displayName}`.toLowerCase()
-    };
-  });
-
-  if(all.length===0){
-    list.innerHTML=`<div class="bg-[#1e2735] p-4 rounded-xl text-center text-[11px] text-gray-400">
-      No hay partidos HOY en ${liga}.<br>Esto es normal, la temporada 2026/27 inicia en Agosto.<br><br>
-      <b>Prueba con:</b><br>• Premier League<br>• Champions<br>• Libertadores<br><br>
-      O cambia a NBA/MLB que si tienen partidos ahora.
-    </div>`;
-    status.innerText='SIN PARTIDOS HOY - ES NORMAL';
-    status.className='text-[8px] bg-gray-500 text-white px-2 py-0.5 rounded-full';
-  } else {
-    render(all);
-    status.innerText=`${all.length} PARTIDOS REALES`;
-    status.className='text-[8px] bg-green-500 text-white px-2 py-0.5 rounded-full';
-  }
-
- }catch(err){
-  list.innerHTML=`<div class="bg-red-500/10 p-3 rounded-xl text-[11px] text-red-400">Error: ${err.message}<br><br>Intenta recargar F5. Si sigue fallando, tu WiFi bloquea ESPN.<br><button onclick="load()" class="mt-2 bg-red-500 text-white px-4 py-1 rounded-full">Reintentar</button></div>`;
-  info.innerText=`Error: ${err.message}`;
-  status.innerText='ERROR CONEXION';
- }
+ list.innerHTML='<div class="py-8 text-center text-gray-400"><i class="fa-solid fa-spinner fa-spin"></i> Cargando...</div>';
+ let liga=document.getElementById('liga').value;
+ let url=`https://site.api.espn.com/apis/site/v2/sports/soccer/${liga}/scoreboard`;
+ let data=await fetchESPN(url);
+ let events=data.events||[];
+ all=events.map(ev=>{
+  const comp=ev.competitions[0];
+  const h=comp.competitors.find(c=>c.homeAway==='home')||comp.competitors[0];
+  const a=comp.competitors.find(c=>c.homeAway==='away')||comp.competitors[1];
+  return {
+   date: comp.date,
+   h:h.team.displayName, a:a.team.displayName,
+   hs:h.score, as:a.score,
+   live: comp.status.type.state==='in',
+   detail: comp.status.type.shortDetail,
+   logoH:h.team.logo, logoA:a.team.logo,
+   comp: ev.season?.slug||liga,
+   search: `${h.team.displayName} ${a.team.displayName}`.toLowerCase()
+  };
+ });
+ document.getElementById('info-text').innerText=`${all.length} partidos • ${liga.toUpperCase()} • Hora local: ${userTZ}`;
+ render(all, 'list');
 }
 
-function render(arr){
- const c=document.getElementById('list');
+async function loadFuture(){
+ const c=document.getElementById('future');
+ c.innerHTML='<div class="py-8 text-center text-gray-400 text-[11px]"><i class="fa-solid fa-spinner fa-spin"></i> Cargando fixture completo 2026/27...</div>';
+ // fixture futuro: pedimos rango de 3 meses
+ let liga=document.getElementById('liga').value;
+ let urls=[
+  `https://site.api.espn.com/apis/site/v2/sports/soccer/${liga}/scoreboard?dates=20260801-20260930`,
+  `https://site.api.espn.com/apis/site/v2/sports/soccer/${liga}/scoreboard?dates=20261001-20261231`,
+  `https://site.api.espn.com/apis/site/v2/sports/soccer/${liga}/scoreboard?dates=20270101-20270531`
+ ];
+ let allEvs=[];
+ for(let u of urls){
+  try{ let d=await fetchESPN(u); allEvs=allEvs.concat(d.events||[]); }catch(e){}
+ }
+ allFuture=allEvs.map(ev=>{
+  const comp=ev.competitions[0];
+  const h=comp.competitors.find(c=>c.homeAway==='home')||comp.competitors[0];
+  const a=comp.competitors.find(c=>c.homeAway==='away')||comp.competitors[1];
+  return {date:comp.date, h:h.team.displayName, a:a.team.displayName, logoH:h.team.logo, logoA:a.team.logo, detail:comp.status.type.shortDetail, search:`${h.team.displayName} ${a.team.displayName}`.toLowerCase(), comp: ev.season?.slug};
+ }).sort((a,b)=> new Date(a.date)-new Date(b.date));
+
+ document.getElementById('info-text').innerText=`Fixture completo: ${allFuture.length} partidos futuros ${liga}`;
+ renderFuture(allFuture);
+}
+
+function renderFuture(arr){
+ const c=document.getElementById('future');
+ if(!arr.length){c.innerHTML='<div class="p-4 text-[11px] text-gray-500">No hay fixture futuro disponible en ESPN para esta liga aún.</div>';return;}
+ // agrupar por mes
+ let byMonth={};
+ arr.forEach(m=>{
+  let k=new Date(m.date).toLocaleString('es-EC',{month:'long', year:'numeric'});
+  if(!byMonth[k]) byMonth[k]=[]; byMonth[k].push(m);
+ });
+ c.innerHTML=Object.entries(byMonth).map(([month, games])=>`
+  <div class="mb-3"><div class="text-[10px] font-black text-[#ff3b3b] mb-1 uppercase">${month}</div>
+  ${games.map(i=>`
+   <div class="bg-[#1e2735] p-2.5 rounded-xl border border-gray-700/20 mb-1.5 flex items-center justify-between">
+    <div class="flex items-center gap-2 flex-1"><img src="${i.logoH}" class="w-5 h-5 bg-white rounded-full"/><span class="text-[11px] font-bold truncate">${i.h}</span></div>
+    <div class="text-center"><div class="text-[9px] text-gray-300">${fmtLocal(i.date)}</div><div class="text-[8px] text-gray-500">vs</div></div>
+    <div class="flex items-center gap-2 flex-1 justify-end"><span class="text-[11px] font-bold truncate">${i.a}</span><img src="${i.logoA}" class="w-5 h-5 bg-white rounded-full"/></div>
+   </div>`).join('')}</div>
+ `).join('');
+}
+
+async function loadBasket(){
+ const list=document.getElementById('list');
+ list.innerHTML='<div class="py-8 text-center text-gray-400">Cargando Basket...</div>';
+ let url='';
+ if(basketLiga==='nba') url=`https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard`;
+ if(basketLiga==='wnba') url=`https://site.api.espn.com/apis/site/v2/sports/basketball/wnba/scoreboard`;
+ if(basketLiga==='euro') url=`https://site.api.espn.com/apis/site/v2/sports/basketball/euroleague/scoreboard`;
+ if(basketLiga==='ncb') url=`https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/scoreboard`;
+
+ let data=await fetchESPN(url);
+ let events=data.events||[];
+ all=events.map(ev=>{
+  const comp=ev.competitions[0];
+  const h=comp.competitors.find(c=>c.homeAway==='home');
+  const a=comp.competitors.find(c=>c.homeAway==='away');
+  return {h:h.team.displayName, a:a.team.displayName, hs:h.score, as:a.score, logoH:h.team.logo, logoA:a.team.logo, date:comp.date, live:comp.status.type.state==='in', detail:comp.status.type.shortDetail, search:`${h.team.displayName} ${a.team.displayName}`.toLowerCase()};
+ });
+ document.getElementById('info-text').innerText=`${basketLiga.toUpperCase()} • ${all.length} partidos • Hora: ${userTZ}`;
+ render(all, 'list');
+}
+
+function render(arr, id){
+ const c=document.getElementById(id);
  c.innerHTML=arr.map(i=>`
-  <div class="bg-[#1e2735] p-3 rounded-xl border ${i.live?'border-green-500/40':'border-gray-700/20'} flex items-center justify-between">
-   <div class="flex items-center gap-2 flex-1">
-     <img src="${i.logoH}" class="w-7 h-7 bg-white rounded-full p-0.5" onerror="this.src='https://via.placeholder.com/28'"/>
-     <span class="text-[11px] font-bold truncate">${i.h}</span>
-     <b class="ml-auto">${i.hs??0}</b>
+  <div class="bg-[#1e2735] p-3 rounded-xl border ${i.live?'border-green-500/40':'border-gray-700/20'}">
+   <div class="flex items-center justify-between">
+    <div class="flex items-center gap-2 flex-1"><img src="${i.logoH}" class="w-7 h-7 bg-white rounded-full p-0.5"/><span class="text-[11px] font-bold truncate">${i.h}</span><b class="ml-auto">${i.hs??''}</b></div>
+    <div class="mx-2 text-[8px] px-2 py-1 rounded-full ${i.live?'bg-red-500 animate-pulse text-white':'bg-[#0f141e] text-gray-400'}">${i.live?'LIVE':(i.detail||'VS')}</div>
+    <div class="flex items-center gap-2 flex-1 justify-end"><b>${i.as??''}</b><span class="text-[11px] font-bold truncate">${i.a}</span><img src="${i.logoA}" class="w-7 h-7 bg-white rounded-full p-0.5"/></div>
    </div>
-   <div class="mx-2 text-[8px] px-2 py-1 rounded-full ${i.live?'bg-red-500 text-white animate-pulse':'bg-[#0f141e] text-gray-400'}">${i.live?'LIVE':i.detail}</div>
-   <div class="flex items-center gap-2 flex-1 justify-end">
-     <b>${i.as??0}</b>
-     <span class="text-[11px] font-bold truncate text-right">${i.a}</span>
-     <img src="${i.logoA}" class="w-7 h-7 bg-white rounded-full p-0.5" onerror="this.src='https://via.placeholder.com/28'"/>
-   </div>
+   <div class="text-[9px] text-gray-400 mt-1.5 text-center">${i.date?fmtLocal(i.date):''}</div>
   </div>
  `).join('');
 }
 
 async function loadTable(){
  const c=document.getElementById('table');
- c.innerHTML='<div class="py-8 text-center text-gray-400 text-[11px]">Cargando tabla real ESPN...</div>';
- try{
-  let liga=document.getElementById('liga').value;
-  let data=await fetchESPN(`https://site.api.espn.com/apis/site/v2/sports/soccer/${liga}/standings`);
-  let html='';
-  (data.children||[]).forEach(g=>{
-    html+=`<div class="bg-[#1e2735] rounded-xl overflow-hidden mb-3"><div class="p-2 bg-[#0f141e] text-[11px] font-black">${g.name}</div>
-    ${(g.standings?.entries||[]).slice(0,20).map((e,i)=>`
-      <div class="flex items-center gap-2 p-2.5 border-b border-gray-800/30 text-[11px]">
-        <span class="w-4 text-gray-500">${i+1}</span>
-        <img src="${e.team.logos?.[0]?.href}" class="w-5 h-5 bg-white rounded-full"/>
-        <span class="flex-1 truncate">${e.team.displayName}</span>
-        <span>${e.stats?.find(x=>x.name==='points')?.value||0} pts</span>
-      </div>`).join('')}</div>`;
-  });
-  c.innerHTML=html||'<div class="p-4 text-[11px] text-gray-500">Tabla no disponible ahora. Liga en receso.</div>';
- }catch(e){ c.innerHTML=`Error tabla: ${e.message}`; }
+ c.innerHTML='<div class="py-8 text-center">Cargando tabla...</div>';
+ let liga=document.getElementById('liga').value;
+ let data=await fetchESPN(`https://site.api.espn.com/apis/site/v2/sports/soccer/${liga}/standings`);
+ let html='';
+ (data.children||[]).forEach(g=>{
+  html+=`<div class="bg-[#1e2735] rounded-xl overflow-hidden mb-3"><div class="p-2 bg-[#0f141e] text-[11px] font-black">${g.name}</div>${(g.standings?.entries||[]).map((e,i)=>`<div class="flex items-center gap-2 p-2.5 border-b border-gray-800/30 text-[11px]"><span class="w-4 text-gray-500">${i+1}</span><img src="${e.team.logos?.[0]?.href}" class="w-5 h-5 bg-white rounded-full"/><span class="flex-1">${e.team.displayName}</span><span>${e.stats?.find(s=>s.name==='points')?.value||0} pts</span></div>`).join('')}</div>`;
+ });
+ c.innerHTML=html||'Tabla no disponible';
 }
-
-function filter(){
- let q=document.getElementById('q').value.toLowerCase();
- render(all.filter(x=>x.search.includes(q)));
-}
-
+function filter(){ let q=document.getElementById('q').value.toLowerCase(); render(all.filter(x=>x.search.includes(q)), tab==='f'?'future':'list'); }
 load();
 </script>
 </body>
