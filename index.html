@@ -1,84 +1,128 @@
 <!DOCTYPE html>
 <html lang="es">
-<head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>76scores</title><script src="https://cdn.tailwindcss.com"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></head>
-<body class="bg-black text-white flex justify-center min-h-screen">
-<div class="w-full max-w-md bg-[#121212] min-h-screen flex flex-col border-x border-neutral-800 relative pb-[70px]">
-<header class="p-4 border-b border-neutral-800 sticky top-0 bg-[#121212] z-10 flex justify-between items-center"><div><h1 class="font-black text-xl">76<span class="text-red-500">SCORES</span></h1><span class="text-[10px] text-gray-400">Todas las ligas - En vivo</span></div><div id="headerTitle" class="text-sm font-bold"></div></header>
-
-<main class="flex-1 overflow-y-auto">
-<!-- VISTA 1: INICIO (tu vista actual) -->
-<div id="view-inicio" class="p-4">
-<select id="liga" onchange="cargarInicio()" class="w-full bg-neutral-800 text-sm rounded-xl px-3 py-3 border border-neutral-700 mb-4 outline-none">
-<optgroup label="Sudamerica"><option value="ecu.1" selected>Ecuador A - Liga Pro</option><option value="arg.1">Argentina A</option><option value="bra.1">Brasil A</option></optgroup>
-<optgroup label="Europa"><option value="eng.1">Premier League</option><option value="esp.1">LaLiga</option><option value="ita.1">Serie A</option></optgroup>
-</select>
-<input id="busq" oninput="filtrar()" placeholder="Buscar equipo..." class="w-full bg-neutral-800 text-sm rounded-xl px-4 py-3 border border-neutral-700 mb-4 outline-none"/>
-<div id="lista" class="space-y-3"></div>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>76Scores</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family: -apple-system, sans-serif;}
+body{background:#0f1419;color:white;padding-bottom:80px;}
+.header{background:#1a222c;padding:15px;text-align:center;font-weight:bold;font-size:18px;position:sticky;top:0;z-index:10}
+.league-list{padding:10px}
+.league-item{background:#1e2a36;padding:15px;margin:8px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+.league-item:active{transform:scale(0.98)}
+.tabs{display:flex;background:#1a222c;padding:5px;gap:5px;position:sticky;top:52px}
+.tab{flex:1;padding:10px;text-align:center;border-radius:8px;background:#253141;cursor:pointer;font-size:14px}
+.tab.active{background:#2e8bff;color:white}
+.match-card{background:#1e2a36;margin:8px;padding:12px;border-radius:12px;display:flex;justify-content:space-between;align-items:center}
+.team{display:flex;align-items:center;gap:8px;width:40%}
+.team.right{justify-content:flex-end}
+.score{background:#0f1419;padding:6px 12px;border-radius:6px;font-weight:bold;min-width:60px;text-align:center}
+.table{width:100%;border-collapse:collapse;margin-top:10px}
+.table th{padding:10px;font-size:12px;color:#8a9bb0;text-align:left;background:#1a222c;position:sticky;top:95px}
+.table td{padding:12px 10px;border-bottom:1px solid #1e2a36;font-size:14px}
+.table tr.top4{border-left:3px solid #2e8bff}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#1a222c;display:flex;justify-content:space-around;padding:10px 0;border-top:1px solid #253141;z-index:100}
+.nav-item{display:flex;flex-direction:column;align-items:center;font-size:11px;color:#8a9bb0;cursor:pointer;gap:3px}
+.nav-item.active{color:#2e8bff}
+.nav-item span{font-size:20px}
+.hidden{display:none}
+.live{color:#ff3b30;font-size:10px;font-weight:bold}
+</style>
+</head>
+<body>
+<div class="header" id="headerTitle">76Scores</div>
+<div id="view-favoritos" class="view hidden"><div style="padding:20px;text-align:center;color:#8a9bb0;margin-top:50px">⭐ Tus partidos favoritos aparecerán aquí</div></div>
+<div id="view-ligas" class="view"><div class="league-list" id="leagueList"></div></div>
+<div id="view-partidos-liga" class="view hidden">
+<div class="tabs"><div class="tab active" onclick="switchTab('partidos')">Partidos</div><div class="tab" onclick="switchTab('tabla')">Tabla</div></div>
+<div id="matchesContainer"></div>
+<div id="tableContainer" class="hidden" style="padding:10px"><table class="table" id="posTable"></table></div>
 </div>
-
-<!-- VISTA 2: LIGAS LISTA -->
-<div id="view-ligas" class="hidden p-3 space-y-6">
-<div class="space-y-2"><h2 class="text-xs text-gray-400 font-bold uppercase px-2">Europa Top</h2><div id="lista-ligas-europa" class="space-y-1"></div></div>
-<div class="space-y-2"><h2 class="text-xs text-gray-400 font-bold uppercase px-2">Sudamérica</h2><div id="lista-ligas-suda" class="space-y-1"></div></div>
-<div class="space-y-2"><h2 class="text-xs text-gray-400 font-bold uppercase px-2">Norteamérica y Resto</h2><div id="lista-ligas-resto" class="space-y-1"></div></div>
+<div id="view-noticias" class="view hidden"><div style="padding:20px;text-align:center;color:#8a9bb0;margin-top:50px">📰 Noticias próximamente</div></div>
+<div id="view-config" class="view hidden"><div style="padding:20px"><h3>Configuración</h3><br><p style="color:#8a9bb0">⚙️ Tema oscuro activo</p></div></div>
+<div class="bottom-nav">
+<div class="nav-item" onclick="showView('favoritos')"><span>⭐</span>Favoritos</div>
+<div class="nav-item active" onclick="showView('ligas')"><span>🏆</span>Ligas</div>
+<div class="nav-item" onclick="showView('noticias')"><span>📰</span>Noticias</div>
+<div class="nav-item" onclick="showView('config')"><span>⚙️</span>Config</div>
 </div>
-
-<!-- VISTA 3: DETALLE LIGA -->
-<div id="view-detalle" class="hidden">
-<div class="flex border-b border-neutral-800"><button onclick="switchTab('horarios')" id="tab-horarios" class="flex-1 py-3 text-sm font-bold border-b-2 border-red-500 text-white">HORARIOS</button><button onclick="switchTab('tabla')" id="tab-tabla" class="flex-1 py-3 text-sm font-bold border-b-2 border-transparent text-gray-500">TABLA</button></div>
-<div id="detalle-horarios" class="p-4 space-y-3"></div>
-<div id="detalle-tabla" class="hidden p-2"></div>
-</div>
-
-<!-- VISTA 4: FAVORITOS -->
-<div id="view-favoritos" class="hidden p-4"><h2 class="font-bold mb-4">Tus Favoritos ⭐</h2><div id="lista-fav" class="space-y-3 text-sm text-gray-500">Aún no tienes equipos favoritos. Dale click a la ⭐ en cualquier partido.</div></div>
-
-<!-- VISTA 5: NOTICIAS -->
-<div id="view-noticias" class="hidden p-4 space-y-3"><h2 class="font-bold mb-2">Noticias</h2><div class="bg-neutral-800 p-4 rounded-xl"><p class="font-bold text-sm">Delfín sorprende en la LigaPro</p><p class="text-xs text-gray-400 mt-1">El equipo cetáceo gana 2-0 en Manta...</p></div><div class="bg-neutral-800 p-4 rounded-xl"><p class="font-bold text-sm">Champions League: sorteos listos</p><p class="text-xs text-gray-400 mt-1">Ya están los grupos para la nueva temporada...</p></div></div>
-
-<!-- VISTA 6: CONFIG -->
-<div id="view-config" class="hidden p-4 space-y-4"><h2 class="font-bold">Configuración</h2><div class="bg-neutral-800 rounded-xl p-4 flex justify-between items-center"><span class="text-sm">Notificaciones</span><div class="w-10 h-6 bg-red-500 rounded-full"></div></div><div class="bg-neutral-800 rounded-xl p-4 text-sm">Versión 3.0 - 76scores</div></div>
-</main>
-
-<!-- MENU ABAJO COMO PEDISTE -->
-<nav class="fixed bottom-0 w-full max-w-md bg-[#1a1a1a] border-t border-neutral-800 flex justify-around py-2 z-20">
-<button onclick="showView('favoritos')" id="btn-favoritos" class="flex flex-col items-center text-red-500"><i class="fa-solid fa-star text-[18px]"></i><span class="text-[10px] mt-1 font-bold">Favoritos</span></button>
-<button onclick="showView('ligas')" id="btn-ligas" class="flex flex-col items-center text-gray-500"><i class="fa-solid fa-trophy text-[18px]"></i><span class="text-[10px] mt-1">Ligas</span></button>
-<button onclick="showView('noticias')" id="btn-noticias" class="flex flex-col items-center text-gray-500"><i class="fa-solid fa-newspaper text-[18px]"></i><span class="text-[10px] mt-1">Noticias</span></button>
-<button onclick="showView('config')" id="btn-config" class="flex flex-col items-center text-gray-500"><i class="fa-solid fa-gear text-[18px]"></i><span class="text-[10px] mt-1">Config</span></button>
-</nav>
-</div>
-
 <script>
-const LIGAS = [
-{id:'eng.1',name:'Premier League',flag:'🏴󐁧󐁢󐁥󐁮󐁧󐁿',cat:'europa'}, {id:'esp.1',name:'LaLiga España',flag:'🇪🇸',cat:'europa'}, {id:'ita.1',name:'Serie A Italia',flag:'🇮🇹',cat:'europa'}, {id:'ger.1',name:'Bundesliga',flag:'🇩🇪',cat:'europa'}, {id:'fra.1',name:'Ligue 1 Francia',flag:'🇫🇷',cat:'europa'}, {id:'uefa.champions',name:'Champions League',flag:'🏆',cat:'europa'}, {id:'uefa.europa',name:'Europa League',flag:'🏆',cat:'europa'}, {id:'eng.2',name:'Championship',flag:'🏴󐁧󐁢󐁥󐁮󐁧󐁿',cat:'europa'}, {id:'tur.1',name:'Turquía',flag:'🇹🇷',cat:'europa'}, {id:'sui.1',name:'Suiza',flag:'🇨🇭',cat:'europa'},
-{id:'ecu.1',name:'LigaPro Ecuador',flag:'🇪🇨',cat:'suda'}, {id:'arg.1',name:'Liga Argentina',flag:'🇦🇷',cat:'suda'}, {id:'bra.1',name:'Brasileirao',flag:'🇧🇷',cat:'suda'}, {id:'col.1',name:'Colombia',flag:'🇨🇴',cat:'suda'}, {id:'chi.1',name:'Chile',flag:'🇨🇱',cat:'suda'}, {id:'per.1',name:'Perú',flag:'🇵🇪',cat:'suda'}, {id:'uru.1',name:'Uruguay',flag:'🇺🇾',cat:'suda'}, {id:'conmebol.libertadores',name:'Libertadores',flag:'🏆',cat:'suda'}, {id:'conmebol.sudamericana',name:'Sudamericana',flag:'🏆',cat:'suda'},
-{id:'usa.1',name:'MLS USA',flag:'🇺🇸',cat:'resto'}, {id:'mex.1',name:'Liga MX',flag:'🇲🇽',cat:'resto'}, {id:'sau.1',name:'Arabia Saudita',flag:'🇸🇦',cat:'resto'},
+const ligas = [
+{id:'PL',name:'Premier League',flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿'},
+{id:'LL',name:'La Liga',flag:'🇪🇸'},
+{id:'SA',name:'Serie A',flag:'🇮🇹'},
+{id:'BL',name:'Bundesliga',flag:'🇩🇪'},
+{id:'L1',name:'Ligue 1',flag:'🇫🇷'},
+{id:'EC',name:'LigaPro Ecuador',flag:'🇪🇨'}
 ];
-let ligaActual=null; let cache=[];
-
+const partidosPL = [
+{local:'Man City',visitante:'Arsenal',hora:'14:30',live:true,score:'2-1'},
+{local:'Liverpool',visitante:'Chelsea',hora:'12:00',score:'0-0'},
+{local:'Man United',visitante:'Tottenham',hora:'14:45',score:'1-1'},
+{local:'Newcastle',visitante:'Aston Villa',hora:'09:00',score:'3-0'},
+{local:'Brighton',visitante:'West Ham',hora:'09:00',score:'1-2'},
+{local:'Everton',visitante:'Fulham',hora:'11:30',score:'2-2'},
+{local:'Brentford',visitante:'Crystal Palace',hora:'14:30',score:'0-1'},
+{local:'Wolves',visitante:'Burnley',hora:'09:00',score:'1-0'}
+];
+const tablaPL = [
+{pos:1,equipo:'Man City',pj:28,pts:65},
+{pos:2,equipo:'Arsenal',pj:28,pts:62},
+{pos:3,equipo:'Liverpool',pj:28,pts:60},
+{pos:4,equipo:'Aston Villa',pj:28,pts:55},
+{pos:5,equipo:'Tottenham',pj:28,pts:50},
+{pos:6,equipo:'Man United',pj:28,pts:48},
+{pos:7,equipo:'Newcastle',pj:28,pts:44},
+{pos:8,equipo:'Brighton',pj:28,pts:42},
+{pos:9,equipo:'Chelsea',pj:28,pts:39},
+{pos:10,equipo:'West Ham',pj:28,pts:38}
+];
+let ligaActual = '';
 function showView(v){
-['inicio','ligas','favoritos','noticias','config','detalle'].forEach(x=>document.getElementById('view-'+x).classList.add('hidden'));
+document.querySelectorAll('.view').forEach(e=>e.classList.add('hidden'));
+document.querySelectorAll('.nav-item').forEach(e=>e.classList.remove('active'));
 document.getElementById('view-'+v).classList.remove('hidden');
-document.querySelectorAll('nav button').forEach(b=>b.classList.replace('text-red-500','text-gray-500'));
-let btn=document.getElementById('btn-'+(v==='detalle'?'ligas':v)); if(btn) btn.classList.replace('text-gray-500','text-red-500');
-if(v==='ligas') renderLigas(); if(v==='inicio') cargarInicio();
+if(v==='ligas') renderLigas();
+event?.currentTarget?.classList?.add('active');
+if(v==='ligas') document.querySelectorAll('.nav-item')[1].classList.add('active');
+document.getElementById('headerTitle').innerText = v==='ligas'? '76Scores - Ligas' : v.charAt(0).toUpperCase()+v.slice(1);
 }
 function renderLigas(){
-const make=(arr,el)=>{document.getElementById(el).innerHTML=arr.map(l=>`<div onclick="openLiga('${l.id}','${l.name}')" class="bg-neutral-800 p-3.5 rounded-xl flex justify-between items-center border border-neutral-700/50 cursor-pointer"><div class="flex items-center gap-3"><span class="text-lg">${l.flag}</span><span class="text-sm font-medium">${l.name}</span></div><i class="fa-solid fa-chevron-right text-xs text-gray-500"></i></div>`).join('');};
-make(LIGAS.filter(x=>x.cat==='europa'),'lista-ligas-europa'); make(LIGAS.filter(x=>x.cat==='suda'),'lista-ligas-suda'); make(LIGAS.filter(x=>x.cat==='resto'),'lista-ligas-resto');
+const c = document.getElementById('leagueList');
+c.innerHTML = ligas.map(l=>`<div class="league-item" onclick="abrirLiga('${l.id}','${l.name}')"><div>${l.flag} ${l.name}</div><div>›</div></div>`).join('');
 }
-function openLiga(id,name){ligaActual=id; document.getElementById('headerTitle').innerText=name; showView('detalle'); switchTab('horarios'); cargarDetalle();}
-
-function switchTab(t){document.getElementById('detalle-horarios').classList.toggle('hidden',t!=='horarios'); document.getElementById('detalle-tabla').classList.toggle('hidden',t!=='tabla'); document.getElementById('tab-horarios').className=t==='horarios'?'flex-1 py-3 text-sm font-bold border-b-2 border-red-500 text-white':'flex-1 py-3 text-sm font-bold border-b-2 border-transparent text-gray-500'; document.getElementById('tab-tabla').className=t==='tabla'?'flex-1 py-3 text-sm font-bold border-b-2 border-red-500 text-white':'flex-1 py-3 text-sm font-bold border-b-2 border-transparent text-gray-500'; if(t==='tabla') cargarTabla();}
-
-async function cargarInicio(){const liga=document.getElementById('liga').value; const c=document.getElementById('lista'); c.innerHTML='<div class="py-10 text-center text-gray-400">Cargando...</div>'; try{const res=await fetch(`https://site.api.espn.com/apis/site/v2/sports/soccer/${liga}/scoreboard`); const data=await res.json(); cache=(data.events||[]).map(ev=>{const comp=ev.competitions[0]; const h=comp.competitors.find(x=>x.homeAway==='home'); const a=comp.competitors.find(x=>x.homeAway==='away'); let s='ns', txt=new Date(ev.date).toLocaleTimeString('es-EC',{hour:'2-digit',minute:'2-digit'}); if(comp.status.type.state==='in'){s='live'; txt='EN VIVO';} else if(comp.status.type.state==='post'){s='ft'; txt='Finalizado';} return {home:h.team.displayName, away:a.team.displayName, gh:h.score, ga:a.score, status:s, txt, all:`${h.team.displayName} ${a.team.displayName}`.toLowerCase()};}); render(cache, 'lista');}catch(e){c.innerHTML='Error: '+e.message;}}
-async function cargarDetalle(){const c=document.getElementById('detalle-horarios'); c.innerHTML='<div class="py-10 text-center text-gray-400">Cargando horarios...</div>'; try{const res=await fetch(`https://site.api.espn.com/apis/site/v2/sports/soccer/${ligaActual}/scoreboard`); const data=await res.json(); const arr=(data.events||[]).map(ev=>{const comp=ev.competitions[0]; const h=comp.competitors.find(x=>x.homeAway==='home'); const a=comp.competitors.find(x=>x.homeAway==='away'); let txt=new Date(ev.date).toLocaleString('es-EC',{weekday:'short',hour:'2-digit',minute:'2-digit'}); return {home:h.team.displayName, away:a.team.displayName, gh:h.score, ga:a.score, txt};}); if(!arr.length){c.innerHTML='<div class="py-10 text-center text-gray-500">No hay partidos próximos</div>';return;} c.innerHTML=arr.map(i=>`<div class="bg-neutral-800 p-3.5 rounded-xl flex justify-between items-center border border-neutral-700/50"><div class="text-sm leading-6"><div class="flex justify-between w-40"><span>${i.home}</span><b>${i.gh??'-'}</b></div><div class="flex justify-between w-40"><span>${i.away}</span><b>${i.ga??'-'}</b></div></div><div class="text-[10px] font-bold px-2 py-1 rounded bg-neutral-900 text-gray-400">${i.txt}</div></div>`).join('');}catch(e){c.innerHTML='Error';}}
-async function cargarTabla(){const c=document.getElementById('detalle-tabla'); c.innerHTML='<div class="py-10 text-center text-gray-400">Cargando tabla...</div>'; try{const res=await fetch(`https://site.api.espn.com/apis/site/v2/sports/soccer/${ligaActual}/standings`); const data=await res.json(); const entries=data.children?.[0]?.standings?.entries || data.entries || []; if(!entries.length){c.innerHTML='<div class="py-10 text-center text-gray-500">Tabla no disponible para esta liga</div>';return;} let html=`<table class="w-full text-xs"><tr class="text-gray-500 border-b border-neutral-800"><th class="py-2 text-left pl-2">#</th><th class="text-left">Equipo</th><th>PJ</th><th>PTS</th></tr>`; entries.slice(0,20).forEach((e,i)=>{const team=e.team?.displayName||e.team?.name||'Equipo'; const stats=e.stats||[]; const get=(n)=>stats.find(s=>s.name===n)?.value||0; html+=`<tr class="border-b border-neutral-800/50"><td class="py-3 pl-2">${i+1}</td><td class="py-3 font-medium">${team}</td><td class="text-center">${get('gamesPlayed')||get('GP')||0}</td><td class="text-center font-bold">${get('points')||get('PTS')||0}</td></tr>`;}); html+='</table>'; c.innerHTML=html; }catch(e){c.innerHTML='<div class="p-4 text-xs text-gray-500">No se pudo cargar la tabla. ESPN no tiene tabla para esta copa.</div>';}}
-
-function render(arr, id){const c=document.getElementById(id); if(!arr.length){c.innerHTML='<div class="py-10 text-center text-gray-500">No hay partidos</div>';return;} c.innerHTML=arr.map(i=>`<div class="bg-neutral-800 p-3.5 rounded-xl flex justify-between items-center border border-neutral-700/50"><div class="text-sm leading-6"><div class="flex justify-between w-40"><span>${i.home}</span><b>${i.gh??0}</b></div><div class="flex justify-between w-40"><span>${i.away}</span><b>${i.ga??0}</b></div></div><div class="text-[10px] font-bold px-2 py-1 rounded bg-neutral-900 ${i.status==='live'?'text-red-400':'text-gray-400'}">${i.txt}</div></div>`).join('');}
-function filtrar(){const q=document.getElementById('busq').value.toLowerCase(); render(cache.filter(x=>x.all.includes(q)), 'lista');}
-showView('favoritos'); setTimeout(()=>showView('inicio'), 100); cargarInicio();
+function abrirLiga(id,nombre){
+ligaActual=id;
+document.querySelectorAll('.view').forEach(e=>e.classList.add('hidden'));
+document.getElementById('view-partidos-liga').classList.remove('hidden');
+document.getElementById('headerTitle').innerText = nombre;
+renderPartidos();
+renderTabla();
+switchTab('partidos');
+}
+function renderPartidos(){
+const c = document.getElementById('matchesContainer');
+let partidos = ligaActual==='PL'? partidosPL : [{local:'Equipo A',visitante:'Equipo B',hora:'15:00',score:'0-0'}];
+c.innerHTML = partidos.map(p=>`<div class="match-card"><div class="team">${p.local}</div><div class="score">${p.live?'<div class=live>EN VIVO</div>':''}${p.score}<div style="font-size:10px;color:#8a9bb0">${p.hora}</div></div><div class="team right">${p.visitante}</div></div>`).join('');
+}
+function renderTabla(){
+const t = document.getElementById('posTable');
+t.innerHTML = `<tr><th>#</th><th>Equipo</th><th>PJ</th><th>Pts</th></tr>` + tablaPL.map(e=>`<tr class="${e.pos<=4?'top4':''}"><td>${e.pos}</td><td>${e.equipo}</td><td>${e.pj}</td><td><b>${e.pts}</b></td></tr>`).join('');
+}
+function switchTab(tab){
+document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
+if(tab==='partidos'){
+document.querySelectorAll('.tab')[0].classList.add('active');
+document.getElementById('matchesContainer').classList.remove('hidden');
+document.getElementById('tableContainer').classList.add('hidden');
+}else{
+document.querySelectorAll('.tab')[1].classList.add('active');
+document.getElementById('matchesContainer').classList.add('hidden');
+document.getElementById('tableContainer').classList.remove('hidden');
+}
+}
+renderLigas();
 </script>
 </body>
 </html>
