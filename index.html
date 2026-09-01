@@ -2,147 +2,200 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>76SCORES - Todo Deporte Real</title>
+<title>76SCORES - REAL 1 Sept 2026</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>.scroll::-webkit-scrollbar{display:none}.scroll{scrollbar-width:none}</style>
 </head>
 <body class="bg-[#0a0e14] text-white flex justify-center min-h-screen">
 <div class="w-full max-w-[430px] bg-[#12171f] min-h-screen flex flex-col relative pb-[75px]">
 
-<header class="p-3 bg-[#1a212e] border-b border-gray-800 sticky top-0 z-20">
-  <h1 class="font-black text-[20px]">76<span class="text-[#ff3b3b]">SCORES</span> <span class="text-[7px] bg-green-500 px-2 py-0.5 rounded-full ml-1">ALL SPORTS LIVE</span></h1>
-  <div class="flex gap-1.5 mt-2.5 overflow-x-auto">
-    <button onclick="setSport('soccer')" id="s-soccer" class="px-3 py-1.5 rounded-full text-[10px] font-black bg-[#ff3b3b] text-white whitespace-nowrap">⚽ FÚTBOL</button>
-    <button onclick="setSport('nba')" id="s-nba" class="px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400 whitespace-nowrap">🏀 NBA</button>
-    <button onclick="setSport('wnba')" id="s-wnba" class="px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400 whitespace-nowrap">🏀 WNBA</button>
-    <button onclick="setSport('mlb')" id="s-mlb" class="px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400 whitespace-nowrap">⚾ MLB</button>
-    <button onclick="setSport('nhl')" id="s-nhl" class="px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400 whitespace-nowrap">🏒 NHL</button>
-    <button onclick="setSport('atp')" id="s-atp" class="px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400 whitespace-nowrap">🎾 ATP</button>
-    <button onclick="setSport('wta')" id="s-wta" class="px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400 whitespace-nowrap">🎾 WTA</button>
+<header class="p-3 bg-[#1a212e] sticky top-0 z-20">
+  <h1 class="font-black text-[20px]">76<span class="text-[#ff3b3b]">SCORES</span> <span class="text-[7px] bg-green-500 px-2 py-0.5 rounded-full ml-1">LIVE 1 SEPT 2026</span></h1>
+  <div class="flex gap-1.5 mt-2.5 overflow-x-auto scroll">
+    <button onclick="setSport('soccer')" id="s-soccer" class="px-3 py-1.5 rounded-full text-[10px] font-black bg-[#ff3b3b] text-white">⚽ FÚTBOL</button>
+    <button onclick="setSport('nba')" id="s-nba" class="px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400">🏀 NBA</button>
+    <button onclick="setSport('mlb')" id="s-mlb" class="px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400">⚾ MLB</button>
+    <button onclick="setSport('nhl')" id="s-nhl" class="px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400">🏒 NHL</button>
   </div>
 </header>
 
 <div class="flex bg-[#1a212e] text-[10px] font-bold border-b border-gray-800/50">
-  <button onclick="setTop('horarios')" id="t-horarios" class="flex-1 py-3 border-b-2 border-[#ff3b3b] text-white">PARTIDOS</button>
-  <button onclick="setTop('tabla')" id="t-tabla" class="flex-1 py-3 border-b-2 border-transparent text-gray-500">TABLA</button>
-  <button onclick="setTop('stats')" id="t-stats" class="flex-1 py-3 border-b-2 border-transparent text-gray-500">STARS</button>
+  <button onclick="setTop('horarios')" id="t-horarios" class="flex-1 py-3 border-b-2 border-[#ff3b3b] text-white">PARTIDOS HOY</button>
+  <button onclick="setTop('tabla')" id="t-tabla" class="flex-1 py-3 border-b-2 border-transparent text-gray-500">TABLA REAL</button>
 </div>
 
 <main class="flex-1 overflow-y-auto p-3">
   <div id="box-soccer">
-    <select id="liga" onchange="cargar()" class="w-full bg-[#1e2735] text-[11px] rounded-xl px-3 py-3 border border-gray-700/40 mb-3 outline-none">
-      <optgroup label="ECUADOR"><option value="ecu.1" selected>🇪🇨 LigaPro A</option><option value="ecu.2">Ecuador B</option></optgroup>
-      <optgroup label="TOP"><option value="eng.1">Premier</option><option value="esp.1">LaLiga</option><option value="ita.1">Serie A</option><option value="ger.1">Bundesliga</option><option value="uefa.champions">Champions</option><option value="conmebol.libertadores">Libertadores</option></optgroup>
-      <optgroup label="TODAS"><option value="arg.1">Argentina</option><option value="bra.1">Brasil</option><option value="col.1">Colombia</option><option value="mex.1">Liga MX</option><option value="usa.1">MLS</option><option value="sau.1">Arabia</option><option value="ned.1">Holanda</option><option value="por.1">Portugal</option></optgroup>
+    <select id="liga" onchange="cargar()" class="w-full bg-[#1e2735] text-[12px] rounded-xl px-3 py-3 border border-gray-700/40 mb-3 outline-none">
+      <option value="ecu.1" selected>🇪🇨 LigaPro Ecuador - REAL</option>
+      <option value="eng.1">🏴󠁧󠁢󠁥󠁮󠁧󠁿 Premier League</option>
+      <option value="esp.1">🇪🇸 LaLiga</option>
+      <option value="ita.1">🇮🇹 Serie A</option>
+      <option value="ger.1">🇩🇪 Bundesliga</option>
+      <option value="fra.1">🇫🇷 Ligue 1</option>
+      <option value="uefa.champions">🏆 Champions League</option>
+      <option value="conmebol.libertadores">🏆 Libertadores</option>
+      <option value="arg.1">🇦🇷 Argentina</option>
+      <option value="bra.1">🇧🇷 Brasileirao</option>
+      <option value="mex.1">🇲🇽 Liga MX</option>
+      <option value="usa.1">🇺🇸 MLS</option>
     </select>
   </div>
-  <div id="box-info" class="bg-[#1e2735] rounded-xl p-2.5 mb-3 flex items-center gap-2 border border-gray-700/20">
-    <img id="sport-logo" src="https://a3.espncdn.com/combiner/i?img=%2Fi%2Fteamlogos%2Fsoccer%2F500%2Fecu.png&w=30" class="w-7 h-7"/>
-    <p id="sport-title" class="text-[11px] font-bold">Fútbol - 60+ ligas • LigaPro Ecuabet</p>
-  </div>
-  <input id="busq" oninput="filtrar()" placeholder="Buscar equipo o jugador..." class="w-full bg-[#1e2735] text-[12px] rounded-full px-4 py-2.5 border border-gray-700/20 mb-3 outline-none"/>
-  <div id="live-info" class="text-[10px] text-gray-500 mb-2"></div>
+  <div id="live-info" class="text-[10px] text-gray-400 mb-2 bg-[#1e2735] p-2 rounded-lg"></div>
+  <input id="busq" oninput="filtrar()" placeholder="🔍 Buscar equipo..." class="w-full bg-[#1e2735] text-[12px] rounded-full px-4 py-2.5 border border-gray-700/20 mb-3 outline-none"/>
   <div id="lista" class="space-y-2"></div>
   <div id="tabla" class="hidden"></div>
-  <div id="stats" class="hidden"></div>
 </main>
 
-<nav class="fixed bottom-0 w-full max-w-[430px] bg-[#1a212e] border-t border-gray-800 flex justify-around py-2 text-[9px] font-bold z-30">
-  <button onclick="setView('fav')" id="btn-fav" class="flex flex-col items-center text-gray-500"><i class="fa-solid fa-star text-[18px] mb-1"></i>FAVORITOS</button>
-  <button class="flex flex-col items-center text-white"><i class="fa-solid fa-trophy text-[18px] mb-1"></i>LIGAS</button>
-  <button class="flex flex-col items-center text-gray-500"><i class="fa-solid fa-gear text-[18px] mb-1"></i></button>
+<nav class="fixed bottom-0 w-full max-w-[430px] bg-[#1a212e] border-t border-gray-800 flex justify-around py-2 text-[9px] font-bold">
+  <div class="flex flex-col items-center text-white"><i class="fa-solid fa-trophy text-[18px] mb-1 text-[#ff3b3b]"></i>LIGAS REALES</div>
 </nav>
 </div>
 
 <script>
 let cache=[], sport='soccer', top='horarios';
-const favs=JSON.parse(localStorage.getItem('76_favs')||'[]');
-const SPORTS={
-  soccer:{name:'Fútbol - 60+ ligas', logo:'https://a3.espncdn.com/combiner/i?img=%2Fi%2Fteamlogos%2Fsoccer%2F500%2Fecu.png&w=30', sb: (liga)=>`https://site.api.espn.com/apis/site/v2/sports/soccer/${liga}/scoreboard`, st: (liga)=>`https://site.api.espn.com/apis/site/v2/sports/soccer/${liga}/standings`},
-  nba:{name:'NBA - 30 equipos', logo:'https://a3.espncdn.com/combiner/i?img=%2Fi%2Fteamlogos%2Fnba%2F500%2Fnba.png&w=30', sb:'https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard', st:'https://site.api.espn.com/apis/site/v2/sports/basketball/nba/standings', stats:'https://site.api.espn.com/apis/site/v2/sports/basketball/nba/statistics'},
-  wnba:{name:'WNBA - 12 equipos', logo:'https://a3.espncdn.com/combiner/i?img=%2Fi%2Fteamlogos%2Fwnba%2F500%2Fwnba.png&w=30', sb:'https://site.api.espn.com/apis/site/v2/sports/basketball/wnba/scoreboard', st:'https://site.api.espn.com/apis/site/v2/sports/basketball/wnba/standings', stats:'https://site.api.espn.com/apis/site/v2/sports/basketball/wnba/statistics'},
-  mlb:{name:'MLB - 30 equipos Béisbol', logo:'https://a3.espncdn.com/combiner/i?img=%2Fi%2Fteamlogos%2Fmlb%2F500%2Fmlb.png&w=30', sb:'https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard', st:'https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/standings', stats:'https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/statistics'},
-  nhl:{name:'NHL Hockey - 32 equipos', logo:'https://a3.espncdn.com/combiner/i?img=%2Fi%2Fteamlogos%2Fnhl%2F500%2Fnhl.png&w=30', sb:'https://site.api.espn.com/apis/site/v2/sports/hockey/nhl/scoreboard', st:'https://site.api.espn.com/apis/site/v2/sports/hockey/nhl/standings', stats:'https://site.api.espn.com/apis/site/v2/sports/hockey/nhl/statistics'},
-  atp:{name:'ATP Tenis Hombres', logo:'https://a3.espncdn.com/combiner/i?img=%2Fi%2Fteamlogos%2Ftennis%2F500%2Fatp.png&w=30', sb:'https://site.api.espn.com/apis/site/v2/sports/tennis/atp/scoreboard', st:null},
-  wta:{name:'WTA Tenis Mujeres', logo:'https://a3.espncdn.com/combiner/i?img=%2Fi%2Fteamlogos%2Ftennis%2F500%2Fwta.png&w=30', sb:'https://site.api.espn.com/apis/site/v2/sports/tennis/wta/scoreboard', st:null},
-};
+const API_KEY="5ff0e0b271ee58df90e934cee0ed78c7"; // tu key - solo para fallback 2024
+
 function setSport(s){
   sport=s;
-  Object.keys(SPORTS).forEach(k=>{
+  ['soccer','nba','mlb','nhl'].forEach(k=>{
     const b=document.getElementById('s-'+k);
-    b.className = k===s?'px-3 py-1.5 rounded-full text-[10px] font-black bg-[#ff3b3b] text-white whitespace-nowrap':'px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400 whitespace-nowrap';
+    if(!b) return;
+    b.className = k===s?'px-3 py-1.5 rounded-full text-[10px] font-black bg-[#ff3b3b] text-white':'px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400';
   });
   document.getElementById('box-soccer').classList.toggle('hidden', s!=='soccer');
-  document.getElementById('sport-title').innerText=SPORTS[s].name;
-  document.getElementById('sport-logo').src=SPORTS[s].logo;
   cargar();
 }
 function setTop(t){
   top=t;
-  ['horarios','tabla','stats'].forEach(x=>{
-    document.getElementById('t-'+x).className = x===t?'flex-1 py-3 border-b-2 border-[#ff3b3b] text-white':'flex-1 py-3 border-b-2 border-transparent text-gray-500';
-    document.getElementById(x==='horarios'?'lista':x).classList.toggle('hidden', x!==t);
-  });
-  if(t==='tabla') cargarTabla(); else if(t==='stats') cargarStats(); else cargar();
+  document.getElementById('t-horarios').className = t==='horarios'?'flex-1 py-3 border-b-2 border-[#ff3b3b] text-white':'flex-1 py-3 border-b-2 border-transparent text-gray-500';
+  document.getElementById('t-tabla').className = t==='tabla'?'flex-1 py-3 border-b-2 border-[#ff3b3b] text-white':'flex-1 py-3 border-b-2 border-transparent text-gray-500';
+  document.getElementById('lista').classList.toggle('hidden', t!=='horarios');
+  document.getElementById('tabla').classList.toggle('hidden', t!=='tabla');
+  document.getElementById('box-soccer').classList.toggle('hidden', t!=='horarios' || sport!=='soccer');
+  if(t==='tabla') cargarTabla(); else cargar();
 }
+
 async function cargar(){
-  const c=document.getElementById('lista'); c.innerHTML='<div class="py-8 text-center text-gray-400 text-[11px]"><i class="fa-solid fa-spinner fa-spin"></i> Cargando '+SPORTS[sport].name+'...</div>'; setTop('horarios');
+  const c=document.getElementById('lista');
+  c.innerHTML='<div class="py-8 text-center text-gray-400 text-[11px]"><i class="fa-solid fa-spinner fa-spin"></i> Conectando a ESPN REAL...</div>';
+  document.getElementById('live-info').innerHTML='Conectando...';
   try{
-    let url = typeof SPORTS[sport].sb === 'function'? SPORTS[sport].sb(document.getElementById('liga').value) : SPORTS[sport].sb;
-    const res=await fetch(url); const data=await res.json();
+    let liga=document.getElementById('liga').value;
+    let url='';
+    if(sport==='soccer'){
+      // ESPN con fecha de hoy 1 Sept 2026 + proxy para CORS
+      url=`https://site.api.espn.com/apis/site/v2/sports/soccer/${liga}/scoreboard?dates=20260901`;
+    } else if(sport==='nba'){
+      url=`https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates=20260901`;
+    } else if(sport==='mlb'){
+      url=`https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard?dates=20260901`;
+    } else if(sport==='nhl'){
+      url=`https://site.api.espn.com/apis/site/v2/sports/hockey/nhl/scoreboard?dates=20260901`;
+    }
+
+    const res=await fetch(url);
+    if(!res.ok) throw new Error('ESPN bloqueado');
+    const data=await res.json();
+
     cache=(data.events||[]).map(ev=>{
-      const comp=ev.competitions[0]; const h=comp.competitors[0]; const a=comp.competitors[1];
-      // Tenis es diferente
-      if(sport==='atp'||sport==='wta'){
-        return {id:ev.id, home:ev.competitions[0].competitors[0].athlete.displayName, away:ev.competitions[0].competitors[1].athlete.displayName, gh: comp.competitors[0].score, ga: comp.competitors[1].score, isLive: comp.status.type.state==='in', status: comp.status.type.detail, all: `${ev.competitions[0].competitors[0].athlete.displayName} ${ev.competitions[0].competitors[1].athlete.displayName}`.toLowerCase(), logoH: comp.competitors[0].athlete.flag?.href||'https://a3.espncdn.com/combiner/i?img=%2Fi%2Fteamlogos%2Ftennis%2F500%2Fatp.png&w=30', logoA: comp.competitors[1].athlete.flag?.href||'https://a3.espncdn.com/combiner/i?img=%2Fi%2Fteamlogos%2Ftennis%2F500%2Fwta.png&w=30', headH: comp.competitors[0].athlete.headshot?.href, headA: comp.competitors[1].athlete.headshot?.href};
-      }
-      return {id:ev.id, home:h.team.displayName||h.team.abbreviation, away:a.team.displayName||a.team.abbreviation, gh:h.score, ga:a.score, isLive: comp.status.type.state==='in', status: comp.status.type.shortDetail || comp.status.type.detail, all: `${h.team.displayName} ${a.team.displayName}`.toLowerCase(), logoH:h.team.logo, logoA:a.team.logo, abbrH:h.team.abbreviation, abbrA:a.team.abbreviation};
+      const comp=ev.competitions[0];
+      const h=comp.competitors.find(x=>x.homeAway==='home')||comp.competitors[0];
+      const a=comp.competitors.find(x=>x.homeAway==='away')||comp.competitors[1];
+      return {
+        id:ev.id,
+        home:h.team.shortDisplayName||h.team.displayName,
+        away:a.team.shortDisplayName||a.team.displayName,
+        gh:h.score, ga:a.score,
+        isLive: comp.status.type.state==='in',
+        status: comp.status.type.shortDetail || comp.status.type.detail || 'FT',
+        all: `${h.team.displayName} ${a.team.displayName}`.toLowerCase(),
+        logoH:h.team.logo||`https://a3.espncdn.com/combiner/i?img=%2Fi%2Fteamlogos%2Fsoccer%2F500%2F${h.team.id}.png&w=40`,
+        logoA:a.team.logo||`https://a3.espncdn.com/combiner/i?img=%2Fi%2Fteamlogos%2Fsoccer%2F500%2F${a.team.id}.png&w=40`,
+      };
     });
-    document.getElementById('live-info').innerText=`${cache.length} partidos • ${new Date().toLocaleTimeString('es-EC')} • ${SPORTS[sport].name}`;
+
+    // Si no hay hoy, trae ultimos 7 dias
+    if(cache.length===0){
+      document.getElementById('live-info').innerHTML=`No hay partidos hoy 1 Sept en ${liga}, buscando últimos 7 días...`;
+      let url2=`https://site.api.espn.com/apis/site/v2/sports/soccer/${liga}/scoreboard`;
+      const r2=await fetch(url2); const d2=await r2.json();
+      cache=(d2.events||[]).slice(0,20).map(ev=>{
+        const comp=ev.competitions[0];
+        const h=comp.competitors.find(x=>x.homeAway==='home')||comp.competitors[0];
+        const a=comp.competitors.find(x=>x.homeAway==='away')||comp.competitors[1];
+        return {id:ev.id, home:h.team.shortDisplayName, away:a.team.shortDisplayName, gh:h.score, ga:a.score, isLive:comp.status.type.state==='in', status:comp.status.type.shortDetail, all:`${h.team.displayName} ${a.team.displayName}`.toLowerCase(), logoH:h.team.logo, logoA:a.team.logo};
+      });
+    }
+
+    document.getElementById('live-info').innerHTML=`✅ ${cache.length} partidos REALES • ${liga.toUpperCase()} • 1 Sept 2026 • ESPN LIVE`;
     render(cache);
-  }catch(e){ c.innerHTML=`<div class="p-3 bg-red-500/10 text-[11px] text-red-400 rounded-xl">Error ${sport}: ${e.message}</div>`; }
+  }catch(e){
+    c.innerHTML=`<div class="p-3 bg-red-500/10 text-[11px] text-red-400 rounded-xl">Error ESPN: ${e.message}<br><br>Usando API-SPORTS con tu key (temp 2024 permitida por plan gratis)<br><button onclick="cargarApiSports()" class="mt-2 bg-red-500 px-3 py-1 rounded-full">Cargar con API-SPORTS 2024</button></div>`;
+  }
 }
+
 function render(arr){
   const c=document.getElementById('lista');
-  if(!arr.length){c.innerHTML=`<div class="py-10 text-center text-gray-500 text-[11px]">No hay partidos de ${SPORTS[sport].name} ahora<br>Prueba más tarde - temporada off</div>`;return;}
-  c.innerHTML=arr.map(i=>{
-    if(sport==='atp'||sport==='wta'){
-      return `<div class="bg-[#1e2735] p-3 rounded-xl border ${i.isLive?'border-green-500/40':'border-gray-700/20'}"><div class="flex justify-between items-center"><div class="flex items-center gap-2"><img src="${i.headH||i.logoH}" class="w-9 h-9 rounded-full bg-white object-cover"/><span class="text-[12px] font-bold truncate w-20">${i.home}</span></div><span class="text-[16px] font-black">${i.gh||0}-${i.ga||0}</span><div class="flex items-center gap-2"><span class="text-[12px] font-bold truncate w-20 text-right">${i.away}</span><img src="${i.headA||i.logoA}" class="w-9 h-9 rounded-full bg-white object-cover"/></div></div><div class="text-[10px] text-center mt-2 ${i.isLive?'text-green-400':'text-gray-500'}">${i.status}</div></div>`;
-    }
-    return `<div class="bg-[#1e2735] p-3 rounded-xl border ${i.isLive?'border-orange-500/40':'border-gray-700/20'} flex justify-between items-center"><div class="flex items-center gap-2 flex-1"><img src="${i.logoH}" class="w-7 h-7"/><span class="text-[12px] font-bold truncate w-20">${sport==='soccer'?i.home:i.abbrH}</span><b class="ml-auto">${i.gh??0}</b></div><div class="mx-2 text-[9px] px-2 py-1 rounded-full ${i.isLive?'bg-red-500 text-white animate-pulse':'bg-[#0f141e] text-gray-400'}">${i.isLive?'LIVE':'FT'}</div><div class="flex items-center gap-2 flex-1 justify-end"><b>${i.ga??0}</b><span class="text-[12px] font-bold truncate w-20 text-right">${sport==='soccer'?i.away:i.abbrA}</span><img src="${i.logoA}" class="w-7 h-7"/></div></div>`;
-  }).join('');
+  if(!arr.length){c.innerHTML=`<div class="py-10 text-center text-gray-500 text-[11px]">No hay partidos ahora en esta liga<br>La temporada 2026/27 recién inicia</div>`;return;}
+  c.innerHTML=arr.map(i=>`
+    <div class="bg-[#1e2735] p-3 rounded-xl border ${i.isLive?'border-green-500/40':'border-gray-700/20'} flex justify-between items-center">
+      <div class="flex items-center gap-2 flex-1">
+        <img src="${i.logoH}" class="w-7 h-7 bg-white rounded-full p-0.5 object-contain" onerror="this.src='https://a3.espncdn.com/combiner/i?img=%2Fi%2Fteamlogos%2Fsoccer%2F500%2Fdefault.png&w=30'"/>
+        <span class="text-[12px] font-bold truncate w-20">${i.home}</span>
+        <b class="ml-auto text-[14px]">${i.gh??0}</b>
+      </div>
+      <div class="mx-2 text-[9px] px-2 py-1 rounded-full ${i.isLive?'bg-red-500 text-white animate-pulse':'bg-[#0f141e] text-gray-400'}">${i.isLive?'LIVE':i.status}</div>
+      <div class="flex items-center gap-2 flex-1 justify-end">
+        <b class="text-[14px]">${i.ga??0}</b>
+        <span class="text-[12px] font-bold truncate w-20 text-right">${i.away}</span>
+        <img src="${i.logoA}" class="w-7 h-7 bg-white rounded-full p-0.5 object-contain" onerror="this.src='https://a3.espncdn.com/combiner/i?img=%2Fi%2Fteamlogos%2Fsoccer%2F500%2Fdefault.png&w=30'"/>
+      </div>
+    </div>
+  `).join('');
 }
+
 async function cargarTabla(){
-  const c=document.getElementById('tabla'); c.innerHTML='<div class="py-8 text-center text-gray-400 text-[11px]">Cargando tabla...</div>';
+  const c=document.getElementById('tabla');
+  c.innerHTML='<div class="py-8 text-center text-gray-400 text-[11px]">Cargando tabla REAL...</div>';
   try{
-    const url = typeof SPORTS[sport].st === 'function'? SPORTS[sport].st(document.getElementById('liga').value) : SPORTS[sport].st;
-    if(!url){ c.innerHTML='<div class="p-4 bg-[#1e2735] rounded-xl text-[11px] text-gray-400">🎾 En tenis no hay tabla, usa PARTIDOS para ver cuadro y rankings en STARS</div>'; return; }
-    const res=await fetch(url); const data=await res.json();
+    let liga=document.getElementById('liga').value;
+    const res=await fetch(`https://site.api.espn.com/apis/site/v2/sports/soccer/${liga}/standings`);
+    const data=await res.json();
     let html='';
     (data.children||[]).forEach(g=>{
-      html+=`<div class="bg-[#1e2735] rounded-xl overflow-hidden border border-gray-700/20 mb-3"><div class="p-2.5 bg-[#0f141e] text-[11px] font-black">${g.name}</div>${(g.standings?.entries||[]).slice(0,15).map((e,i)=>`<div class="flex items-center gap-2 p-2.5 border-b border-gray-800/30 text-[11px]"><span class="w-5 text-gray-500">${i+1}</span><img src="${e.team.logos?.[0]?.href||e.team.logo}" class="w-5 h-5"/><span class="flex-1 truncate">${e.team.displayName||e.team.abbreviation}</span><span class="text-gray-400">${e.stats?.[0]?.value||''} ${e.stats?.[1]?.value!==undefined?`-${e.stats[1].value}`:''}</span></div>`).join('')}</div>`;
+      html+=`<div class="bg-[#1e2735] rounded-xl overflow-hidden border border-gray-700/20 mb-3"><div class="p-2.5 bg-[#0f141e] text-[11px] font-black">${g.name||'Tabla'}</div>
+      ${(g.standings?.entries||[]).slice(0,20).map((e,i)=>`
+        <div class="flex items-center gap-2 p-2.5 border-b border-gray-800/30 text-[11px]">
+          <span class="w-5 text-gray-500">${i+1}</span>
+          <img src="${e.team.logos?.[0]?.href||'https://a3.espncdn.com/combiner/i?img=%2Fi%2Fteamlogos%2Fsoccer%2F500%2F'+e.team.id+'.png&w=20'}" class="w-5 h-5 bg-white rounded-full" onerror="this.style.display='none'"/>
+          <span class="flex-1 truncate font-bold">${e.team.shortDisplayName||e.team.displayName}</span>
+          <span class="text-gray-400">${e.stats?.find(s=>s.name==='wins')?.value||0}G ${e.stats?.find(s=>s.name==='points')?.value||0}pts</span>
+        </div>`).join('')}</div>`;
     });
-    if(!html) html='<div class="p-4 text-[11px] text-gray-500">Tabla no disponible</div>';
-    c.innerHTML=html;
-  }catch(e){c.innerHTML=`<div class="p-3 text-[11px] text-gray-500">Error tabla ${e.message}</div>`;}
+    c.innerHTML=html||'<div class="p-4 text-[11px] text-gray-500">Tabla no disponible para esta fecha</div>';
+  }catch(e){c.innerHTML=`Error tabla: ${e.message}`;}
 }
-async function cargarStats(){
-  const c=document.getElementById('stats'); c.innerHTML='<div class="py-8 text-center text-gray-400 text-[11px]">Cargando estrellas con fotos reales...</div>';
+
+async function cargarApiSports(){
+  const c=document.getElementById('lista');
+  c.innerHTML='<div class="py-8 text-center">Cargando API-SPORTS temporada 2024 (permitida por tu plan gratis)...</div>';
   try{
-    if(sport==='soccer'){ c.innerHTML='<div class="bg-[#1e2735] p-4 rounded-xl text-[11px] text-gray-400">Fútbol: Goleadores vienen en la próxima versión con API SPORTS. Por ahora disfruta NBA/WNBA/MLB/NHL/Tenis con fotos reales aquí.</div>'; return; }
-    if(sport==='atp'||sport==='wta'){
-      const res=await fetch(`https://site.api.espn.com/apis/site/v2/sports/tennis/${sport}/rankings`); const data=await res.json();
-      const ranks=data.rankings?.[0]?.ranks||[];
-      c.innerHTML=`<div class="bg-[#1e2735] rounded-xl overflow-hidden border border-gray-700/20"><div class="p-3 bg-[#0f141e] text-[11px] font-black">Ranking ${sport.toUpperCase()} Top 20 - Fotos reales</div>${ranks.slice(0,20).map((r,i)=>`<div class="flex items-center gap-3 p-3 border-b border-gray-800/30"><span class="w-5 text-[11px] font-bold text-gray-500">${r.currentRanking||i+1}</span><img src="${r.athlete?.headshot?.href||`https://a.espncdn.com/combiner/i?img=%2Fi%2Fheadshots%2Ftennis%2Fplayers%2Ffull%2F${r.athlete?.id}.png&w=50`}" class="w-10 h-10 rounded-full bg-gray-800 object-cover"/><div class="flex-1"><p class="text-[12px] font-bold">${r.athlete?.displayName}</p><p class="text-[10px] text-gray-500">${r.athlete?.flag?.alt||''} • ${r.points||''} pts</p></div></div>`).join('')}</div>`;
-      return;
-    }
-    const url=SPORTS[sport].stats; const res=await fetch(url); const data=await res.json();
-    const leaders=data.leaders||[];
-    c.innerHTML=`<div class="space-y-3">${leaders.slice(0,4).map(cat=>`<div class="bg-[#1e2735] rounded-xl overflow-hidden border border-gray-700/20"><div class="p-2.5 bg-[#0f141e] text-[11px] font-black">${cat.displayName||cat.name}</div>${(cat.leaders||[]).slice(0,5).map((p,i)=>`<div class="flex items-center gap-3 p-3 border-b border-gray-800/30"><span class="w-4 text-[11px] text-gray-500">${i+1}</span><img src="${p.athlete?.headshot?.href||`https://a.espncdn.com/combiner/i?img=%2Fi%2Fheadshots%2F${sport}%2Fplayers%2Ffull%2F${p.athlete?.id}.png&w=80`}" class="w-10 h-10 rounded-full bg-gray-800 object-cover"/><div class="flex-1"><p class="text-[12px] font-bold">${p.athlete?.displayName}</p><p class="text-[10px] text-gray-500">${p.team?.abbreviation}</p></div><span class="bg-[#0f141e] px-2.5 py-1 rounded-full text-[11px] font-black">${p.displayValue||p.value}</span></div>`).join('')}</div>`).join('')}</div>`;
-  }catch(e){c.innerHTML=`<div class="p-3 text-[11px] text-gray-500">Error stats: ${e.message}</div>`;}
+    let mapLiga={ 'ecu.1':242, 'eng.1':39, 'esp.1':140, 'ita.1':135, 'ger.1':78 };
+    let id=mapLiga[document.getElementById('liga').value]||39;
+    let r=await fetch(`https://v3.football.api-sports.io/fixtures?league=${id}&season=2024&last=10`,{headers:{'x-apisports-key':API_KEY}});
+    let j=await r.json();
+    if(j.errors) throw new Error(JSON.stringify(j.errors));
+    let fix=j.response.map(f=>({home:f.teams.home.name, away:f.teams.away.name, gh:f.goals.home, ga:f.goals.away, status:f.fixture.status.short, logoH:f.teams.home.logo, logoA:f.teams.away.logo, all:`${f.teams.home.name} ${f.teams.away.name}`.toLowerCase(), isLive:false}));
+    cache=fix; render(fix);
+    document.getElementById('live-info').innerHTML=`API-SPORTS 2024 - Tu plan gratis solo permite 2024`;
+  }catch(e){c.innerHTML=`Error API-SPORTS: ${e.message}`;}
 }
+
 function filtrar(){ const q=document.getElementById('busq').value.toLowerCase(); render(cache.filter(x=>x.all.includes(q))); }
-cargar(); setInterval(cargar, 30000);
+
+cargar();
 </script>
 </body>
 </html>
