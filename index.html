@@ -2,9 +2,10 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>76SCORES - FIXTURE COMPLETO</title>
+<title>76SCORES</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>.no-scrollbar::-webkit-scrollbar{display:none}.no-scrollbar{-ms-overflow-style:none;scrollbar-width:none}</style>
 </head>
 <body class="bg-[#0a0e14] text-white flex justify-center">
 <div class="w-full max-w-[430px] bg-[#12171f] min-h-screen flex flex-col pb-[75px]">
@@ -13,13 +14,16 @@
   <div class="flex justify-between items-center">
     <h1 class="font-black text-[18px]">76<span class="text-[#ff3b3b]">SCORES</span></h1>
   </div>
-  <div class="flex gap-1.5 mt-3 overflow-x-auto">
-    <button onclick="setSport('soccer')" id="s-soccer" class="px-3 py-1.5 rounded-full text-[10px] font-black bg-[#ff3b3b]">⚽ FÚTBOL</button>
-    <button onclick="setSport('basket')" id="s-basket" class="px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400">🏀 BASKET</button>
-    <button onclick="setSport('mlb')" id="s-mlb" class="px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400">⚾ BÉISBOL</button>
-    <button onclick="setSport('tenis')" id="s-tenis" class="px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400">🎾 TENIS</button>
+  <!-- MOD: Deportes deslizable hasta Box -->
+  <div class="flex gap-1.5 mt-3 overflow-x-auto no-scrollbar">
+    <button onclick="setSport('soccer')" id="s-soccer" class="whitespace-nowrap px-3 py-1.5 rounded-full text-[10px] font-black bg-[#ff3b3b]">⚽ FÚTBOL</button>
+    <button onclick="setSport('basket')" id="s-basket" class="whitespace-nowrap px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400">🏀 BASKET</button>
+    <button onclick="setSport('mlb')" id="s-mlb" class="whitespace-nowrap px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400">⚾ BÉISBOL</button>
+    <button onclick="setSport('tenis')" id="s-tenis" class="whitespace-nowrap px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400">🎾 TENIS</button>
+    <button onclick="setSport('nfl')" id="s-nfl" class="whitespace-nowrap px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400">🏈 FÚTBOL AMERICANO</button>
+    <button onclick="setSport('box')" id="s-box" class="whitespace-nowrap px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400">🥊 BOX</button>
   </div>
-  <div id="basket-sub" class="hidden flex gap-1.5 mt-2 overflow-x-auto">
+  <div id="basket-sub" class="hidden flex gap-1.5 mt-2 overflow-x-auto no-scrollbar">
     <button onclick="setBasketLiga('nba')" id="b-nba" class="px-3 py-1 rounded-full text-[9px] font-bold bg-[#ff3b3b]">NBA</button>
     <button onclick="setBasketLiga('wnba')" id="b-wnba" class="px-3 py-1 rounded-full text-[9px] font-bold bg-[#1e2735] text-gray-400">WNBA</button>
     <button onclick="setBasketLiga('euro')" id="b-euro" class="px-3 py-1 rounded-full text-[9px] font-bold bg-[#1e2735] text-gray-400">EUROLIGA</button>
@@ -27,13 +31,12 @@
   </div>
 </header>
 
-<div class="flex bg-[#1a212e] text-[10px] font-bold sticky top-[88px] z-20">
-  <button id="t-p" onclick="setTab('p')" class="flex-1 py-3 border-b-2 border-[#ff3b3b] text-white">PARTIDOS</button>
-  <button id="t-f" onclick="setTab('f')" class="flex-1 py-3 border-b-2 border-transparent text-gray-500">FIXTURE COMPLETO</button>
-  <button id="t-t" onclick="setTab('t')" class="flex-1 py-3 border-b-2 border-transparent text-gray-500">TABLA</button>
+<div class="bg-[#1a212e] px-3 py-2.5 flex justify-between items-center">
+  <span class="text-[11px] font-black tracking-widest">HOY</span>
+  <span id="today-date" class="text-[9px] text-gray-400"></span>
 </div>
 
-<main class="p-3">
+<main class="p-3 flex-1">
   <select id="liga" onchange="load()" class="w-full bg-[#1e2735] text-[12px] rounded-xl px-3 py-3 border border-gray-700 mb-2">
     <option value="ecu.1">🇪🇨 LigaPro Ecuador</option>
     <option value="eng.1">🏴󠁧󠁢󠁥󠁮󠁧󠁿 Premier League</option>
@@ -52,22 +55,39 @@
   <div id="info" class="text-[10px] text-gray-300 bg-[#1e2735] p-2 rounded-lg mb-2">Cargando...</div>
   <input id="q" oninput="filter()" placeholder="🔍 Buscar equipo..." class="w-full bg-[#1e2735] text-[12px] rounded-full px-4 py-2.5 mb-3 outline-none"/>
   <div id="list" class="space-y-2"></div>
-  <div id="future" class="hidden space-y-2"></div>
-  <div id="table" class="hidden"></div>
+  <div id="fav-view" class="hidden text-[11px] text-gray-400 text-center py-10">Tus favoritos aparecerán aquí ⭐</div>
+  <div id="ligas-view" class="hidden space-y-2"></div>
+  <div id="noticias-view" class="hidden text-[11px] text-gray-400 text-center py-10">Noticias pronto 📰</div>
+  <div id="config-view" class="hidden p-3 bg-[#1e2735] rounded-xl text-[11px]">Configuración<br>Zona horaria automática activa<br><br>Versión 76SCORES 1.0</div>
 </main>
+
+<!-- ABAJO: Favoritos, Ligas, Noticias, Config -->
+<div class="fixed bottom-0 w-full max-w-[430px] bg-[#1a212e] border-t border-gray-800 flex justify-around py-2 z-40">
+  <button onclick="setBottom('fav')" id="bb-fav" class="flex flex-col items-center text-gray-500"><i class="fa-regular fa-star text-[16px]"></i><span class="text-[8px] mt-1">FAVORITOS</span></button>
+  <button onclick="setBottom('ligas')" id="bb-ligas" class="flex flex-col items-center text-gray-500"><i class="fa-solid fa-trophy text-[16px]"></i><span class="text-[8px] mt-1">LIGAS</span></button>
+  <button onclick="setBottom('hoy')" id="bb-hoy" class="flex flex-col items-center text-[#ff3b3b]"><i class="fa-solid fa-house text-[16px]"></i><span class="text-[8px] mt-1">HOY</span></button>
+  <button onclick="setBottom('noticias')" id="bb-noticias" class="flex flex-col items-center text-gray-500"><i class="fa-regular fa-newspaper text-[16px]"></i><span class="text-[8px] mt-1">NOTICIAS</span></button>
+  <button onclick="setBottom('config')" id="bb-config" class="flex flex-col items-center text-gray-500"><i class="fa-solid fa-gear text-[16px]"></i><span class="text-[8px] mt-1">CONFIG</span></button>
+</div>
+
 </div>
 
 <script>
-let all=[], allFuture=[], sport='soccer', basketLiga='nba', tab='p';
+let all=[], sport='soccer', basketLiga='nba', bottom='hoy';
 let userTZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
+document.getElementById('today-date').innerText = new Date().toLocaleDateString('es-EC',{weekday:'long', day:'2-digit', month:'long', timeZone:userTZ});
 
 function setSport(s){
  sport=s;
- document.querySelectorAll('[id^=s-]').forEach(b=>b.className='px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400');
- document.getElementById('s-'+s).className='px-3 py-1.5 rounded-full text-[10px] font-black bg-[#ff3b3b]';
+ document.querySelectorAll('[id^=s-]').forEach(b=>b.className='whitespace-nowrap px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400');
+ document.getElementById('s-'+s).className='whitespace-nowrap px-3 py-1.5 rounded-full text-[10px] font-black bg-[#ff3b3b] text-white';
  document.getElementById('basket-sub').classList.toggle('hidden', s!=='basket');
  document.getElementById('liga').classList.toggle('hidden', s!=='soccer');
- if(s==='basket') loadBasket(); else load();
+ if(s==='basket') loadBasket();
+ else if(s==='mlb') loadMlb();
+ else if(s==='nfl') loadNfl();
+ else if(s==='box') loadBox();
+ else load();
 }
 function setBasketLiga(l){
  basketLiga=l;
@@ -75,15 +95,20 @@ function setBasketLiga(l){
  document.getElementById('b-'+l).className='px-3 py-1 rounded-full text-[9px] font-bold bg-[#ff3b3b] text-white';
  loadBasket();
 }
-function setTab(t){
- tab=t;
- document.getElementById('t-p').className = t==='p'?'flex-1 py-3 border-b-2 border-[#ff3b3b] text-white':'flex-1 py-3 border-b-2 border-transparent text-gray-500';
- document.getElementById('t-f').className = t==='f'?'flex-1 py-3 border-b-2 border-[#ff3b3b] text-white':'flex-1 py-3 border-b-2 border-transparent text-gray-500';
- document.getElementById('t-t').className = t==='t'?'flex-1 py-3 border-b-2 border-[#ff3b3b] text-white':'flex-1 py-3 border-b-2 border-transparent text-gray-500';
- document.getElementById('list').classList.toggle('hidden', t!=='p');
- document.getElementById('future').classList.toggle('hidden', t!=='f');
- document.getElementById('table').classList.toggle('hidden', t!=='t');
- if(t==='f') loadFuture(); else if(t==='t') loadTable(); else load();
+function setBottom(b){
+ bottom=b;
+ document.querySelectorAll('[id^=bb-]').forEach(el=>{el.classList.remove('text-[#ff3b3b]'); el.classList.add('text-gray-500')});
+ document.getElementById('bb-'+b).classList.remove('text-gray-500'); document.getElementById('bb-'+b).classList.add('text-[#ff3b3b]');
+ document.getElementById('list').classList.toggle('hidden', b!=='hoy');
+ document.getElementById('liga').classList.toggle('hidden', b!=='hoy' || sport!=='soccer');
+ document.getElementById('q').classList.toggle('hidden', b!=='hoy');
+ document.getElementById('info').classList.toggle('hidden', b!=='hoy');
+ document.getElementById('fav-view').classList.toggle('hidden', b!=='fav');
+ document.getElementById('ligas-view').classList.toggle('hidden', b!=='ligas');
+ document.getElementById('noticias-view').classList.toggle('hidden', b!=='noticias');
+ document.getElementById('config-view').classList.toggle('hidden', b!=='config');
+ if(b==='hoy') load();
+ if(b==='ligas') loadLigas();
 }
 async function fetchESPN(url){
  try{ let r=await fetch(url); return await r.json(); }
@@ -92,67 +117,47 @@ async function fetchESPN(url){
 function fmtLocal(iso){
  if(!iso) return 'Por definir';
  let d=new Date(iso);
- return d.toLocaleString('es-EC', {weekday:'short', day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit', timeZone: userTZ});
+ return d.toLocaleString('es-EC', {hour:'2-digit', minute:'2-digit', weekday:'short', timeZone: userTZ});
 }
 async function load(){
+ if(bottom!=='hoy') return;
  const list=document.getElementById('list');
  const info=document.getElementById('info');
  list.innerHTML='<div class="py-8 text-center text-gray-400 text-[11px]"><i class="fa-solid fa-spinner fa-spin"></i> Cargando...</div>';
  let liga=document.getElementById('liga').value;
  let data=await fetchESPN(`https://site.api.espn.com/apis/site/v2/sports/soccer/${liga}/scoreboard`);
  let events=data.events||[];
- if(events.length===0){ let d2=await fetchESPN(`https://site.api.espn.com/apis/site/v2/sports/soccer/${liga}/scoreboard?dates=20260801-20260930`); events=d2.events||[]; }
- all=events.map(ev=>{
-  const comp=ev.competitions[0]; const h=comp.competitors.find(c=>c.homeAway==='home')||comp.competitors[0]; const a=comp.competitors.find(c=>c.homeAway==='away')||comp.competitors[1];
-  return {date:comp.date, h:h.team.displayName, a:a.team.displayName, hs:h.score, as:a.score, live:comp.status.type.state==='in', detail:comp.status.type.shortDetail, logoH:h.team.logo, logoA:a.team.logo, search:`${h.team.displayName} ${a.team.displayName}`.toLowerCase()};
- });
- info.innerText=`${all.length} partidos • ${liga.toUpperCase()}`;
- render(all, 'list');
-}
-async function loadFuture(){
- const c=document.getElementById('future');
- const info=document.getElementById('info');
- c.innerHTML='<div class="py-8 text-center text-gray-400 text-[11px]"><i class="fa-solid fa-spinner fa-spin"></i> Cargando fixture completo...</div>';
- let liga=document.getElementById('liga').value;
- let urls=[
-  `https://site.api.espn.com/apis/site/v2/sports/soccer/${liga}/scoreboard?dates=20260801-20260930`,
-  `https://site.api.espn.com/apis/site/v2/sports/soccer/${liga}/scoreboard?dates=20261001-20261231`,
-  `https://site.api.espn.com/apis/site/v2/sports/soccer/${liga}/scoreboard?dates=20270101-20270531`
- ];
- let allEvs=[];
- for(let u of urls){ try{ let d=await fetchESPN(u); allEvs=allEvs.concat(d.events||[]); }catch(e){} }
- allFuture=allEvs.map(ev=>{
-  const comp=ev.competitions[0]; const h=comp.competitors.find(c=>c.homeAway==='home')||comp.competitors[0]; const a=comp.competitors.find(c=>c.homeAway==='away')||comp.competitors[1];
-  return {date:comp.date, h:h.team.displayName, a:a.team.displayName, logoH:h.team.logo, logoA:a.team.logo, search:`${h.team.displayName} ${a.team.displayName}`.toLowerCase()};
- }).sort((a,b)=> new Date(a.date)-new Date(b.date));
- info.innerText=`Fixture: ${allFuture.length} partidos futuros`;
- let byMonth={}; allFuture.forEach(m=>{ let k=new Date(m.date).toLocaleString('es-EC',{month:'long', year:'numeric', timeZone:userTZ}); if(!byMonth[k]) byMonth[k]=[]; byMonth[k].push(m); });
- c.innerHTML=Object.entries(byMonth).map(([month, games])=>`<div class="mb-3"><div class="text-[10px] font-black text-[#ff3b3b] mb-1 uppercase">${month}</div>${games.map(i=>`<div class="bg-[#1e2735] p-2.5 rounded-xl border border-gray-700/20 mb-1.5 flex items-center justify-between"><div class="flex items-center gap-2 flex-1"><img src="${i.logoH}" class="w-5 h-5 bg-white rounded-full"/><span class="text-[11px] font-bold truncate">${i.h}</span></div><div class="text-center"><div class="text-[9px] text-gray-300">${fmtLocal(i.date)}</div><div class="text-[8px] text-gray-500">vs</div></div><div class="flex items-center gap-2 flex-1 justify-end"><span class="text-[11px] font-bold truncate">${i.a}</span><img src="${i.logoA}" class="w-5 h-5 bg-white rounded-full"/></div></div>`).join('')}</div>`).join('');
+ all=events.map(ev=>{ const comp=ev.competitions[0]; const h=comp.competitors.find(c=>c.homeAway==='home')||comp.competitors[0]; const a=comp.competitors.find(c=>c.homeAway==='away')||comp.competitors[1]; return {date:comp.date, h:h.team.displayName, a:a.team.displayName, hs:h.score, as:a.score, live:comp.status.type.state==='in', detail:comp.status.type.shortDetail, logoH:h.team.logo, logoA:a.team.logo, search:`${h.team.displayName} ${a.team.displayName}`.toLowerCase()}; });
+ info.innerText=`${all.length} partidos hoy • ${liga.toUpperCase()}`;
+ render(all);
 }
 async function loadBasket(){
- const list=document.getElementById('list');
- const info=document.getElementById('info');
- list.innerHTML='<div class="py-8 text-center text-gray-400">Cargando Basket...</div>';
+ const list=document.getElementById('list'); list.innerHTML='<div class="py-8 text-center text-gray-400">Cargando Basket...</div>';
  let url = basketLiga==='nba'? `https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard` : basketLiga==='wnba'? `https://site.api.espn.com/apis/site/v2/sports/basketball/wnba/scoreboard` : basketLiga==='euro'? `https://site.api.espn.com/apis/site/v2/sports/basketball/euroleague/scoreboard` : `https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/scoreboard`;
- let data=await fetchESPN(url);
- let events=data.events||[];
+ let data=await fetchESPN(url); let events=data.events||[];
  all=events.map(ev=>{ const comp=ev.competitions[0]; const h=comp.competitors.find(c=>c.homeAway==='home'); const a=comp.competitors.find(c=>c.homeAway==='away'); return {h:h.team.displayName, a:a.team.displayName, hs:h.score, as:a.score, logoH:h.team.logo, logoA:a.team.logo, date:comp.date, live:comp.status.type.state==='in', detail:comp.status.type.shortDetail, search:`${h.team.displayName} ${a.team.displayName}`.toLowerCase()}; });
- info.innerText=`${basketLiga.toUpperCase()} • ${all.length} partidos`;
- render(all, 'list');
+ document.getElementById('info').innerText=`${basketLiga.toUpperCase()} • ${all.length} partidos hoy`; render(all);
 }
-function render(arr, id){
- const c=document.getElementById(id);
+async function loadMlb(){
+ const list=document.getElementById('list'); list.innerHTML='<div class="py-8 text-center">Cargando MLB...</div>';
+ let data=await fetchESPN(`https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard`);
+ let events=data.events||[]; all=events.map(ev=>{ const comp=ev.competitions[0]; const h=comp.competitors.find(c=>c.homeAway==='home'); const a=comp.competitors.find(c=>c.homeAway==='away'); return {h:h.team.displayName, a:a.team.displayName, hs:h.score, as:a.score, logoH:h.team.logo, logoA:a.team.logo, date:comp.date, live:comp.status.type.state==='in', detail:comp.status.type.shortDetail, search:`${h.team.displayName} ${a.team.displayName}`.toLowerCase()}; });
+ document.getElementById('info').innerText=`MLB • ${all.length} partidos hoy`; render(all);
+}
+async function loadNfl(){
+ const list=document.getElementById('list'); list.innerHTML='<div class="py-8 text-center">Cargando NFL...</div>';
+ let data=await fetchESPN(`https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard`);
+ let events=data.events||[]; all=events.map(ev=>{ const comp=ev.competitions[0]; const h=comp.competitors.find(c=>c.homeAway==='home'); const a=comp.competitors.find(c=>c.homeAway==='away'); return {h:h.team.displayName, a:a.team.displayName, hs:h.score, as:a.score, logoH:h.team.logo, logoA:a.team.logo, date:comp.date, live:comp.status.type.state==='in', detail:comp.status.type.shortDetail, search:`${h.team.displayName} ${a.team.displayName}`.toLowerCase()}; });
+ document.getElementById('info').innerText=`NFL • ${all.length} partidos hoy`; render(all);
+}
+async function loadBox(){ document.getElementById('list').innerHTML='<div class="py-10 text-center text-[11px] text-gray-500">Boxeo - Eventos próximamente 🥊</div>'; document.getElementById('info').innerText='BOX • Próximamente'; }
+function loadLigas(){ const c=document.getElementById('ligas-view'); c.innerHTML=['ecu.1','eng.1','esp.1','uefa.champions','conmebol.libertadores'].map(l=>`<div onclick="document.getElementById('liga').value='${l}';setBottom('hoy');load()" class="bg-[#1e2735] p-3 rounded-xl text-[11px]">${l}</div>`).join(''); }
+function render(arr){
+ const c=document.getElementById('list');
+ if(!arr.length){c.innerHTML='<div class="p-4 text-center text-[11px] text-gray-500">No hay partidos hoy para esta liga</div>';return;}
  c.innerHTML=arr.map(i=>`<div class="bg-[#1e2735] p-3 rounded-xl border ${i.live?'border-green-500/40':'border-gray-700/20'}"><div class="flex items-center justify-between"><div class="flex items-center gap-2 flex-1"><img src="${i.logoH}" class="w-7 h-7 bg-white rounded-full p-0.5"/><span class="text-[11px] font-bold truncate">${i.h}</span><b class="ml-auto">${i.hs??''}</b></div><div class="mx-2 text-[8px] px-2 py-1 rounded-full ${i.live?'bg-red-500 animate-pulse text-white':'bg-[#0f141e] text-gray-400'}">${i.live?'LIVE':(i.detail||'VS')}</div><div class="flex items-center gap-2 flex-1 justify-end"><b>${i.as??''}</b><span class="text-[11px] font-bold truncate">${i.a}</span><img src="${i.logoA}" class="w-7 h-7 bg-white rounded-full p-0.5"/></div></div><div class="text-[9px] text-gray-400 mt-1.5 text-center">${i.date?fmtLocal(i.date):''}</div></div>`).join('');
 }
-async function loadTable(){
- const c=document.getElementById('table');
- c.innerHTML='<div class="py-8 text-center text-[11px]">Cargando tabla...</div>';
- let liga=document.getElementById('liga').value;
- let data=await fetchESPN(`https://site.api.espn.com/apis/site/v2/sports/soccer/${liga}/standings`);
- let html=''; (data.children||[]).forEach(g=>{ html+=`<div class="bg-[#1e2735] rounded-xl overflow-hidden mb-3"><div class="p-2 bg-[#0f141e] text-[11px] font-black">${g.name}</div>${(g.standings?.entries||[]).map((e,i)=>`<div class="flex items-center gap-2 p-2.5 border-b border-gray-800/30 text-[11px]"><span class="w-4 text-gray-500">${i+1}</span><img src="${e.team.logos?.[0]?.href}" class="w-5 h-5 bg-white rounded-full"/><span class="flex-1">${e.team.displayName}</span><span>${e.stats?.find(s=>s.name==='points')?.value||0} pts</span></div>`).join('')}</div>`; });
- c.innerHTML=html||'Tabla no disponible';
-}
-function filter(){ let q=document.getElementById('q').value.toLowerCase(); render(all.filter(x=>x.search.includes(q)), 'list'); }
+function filter(){ let q=document.getElementById('q').value.toLowerCase(); render(all.filter(x=>x.search.includes(q))); }
 load();
 </script>
 </body>
