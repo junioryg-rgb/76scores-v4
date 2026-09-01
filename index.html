@@ -17,42 +17,49 @@
     <button onclick="setSport('basket')" id="s-basket" class="whitespace-nowrap px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400">🏀 BASKET</button>
     <button onclick="setSport('mlb')" id="s-mlb" class="whitespace-nowrap px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400">⚾ BÉISBOL</button>
     <button onclick="setSport('tenis')" id="s-tenis" class="whitespace-nowrap px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400">🎾 TENIS</button>
-    <button onclick="setSport('nfl')" id="s-nfl" class="whitespace-nowrap px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400">🏈 FÚTBOL AMERICANO</button>
-    <button onclick="setSport('box')" id="s-box" class="whitespace-nowrap px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400">🥊 BOX</button>
   </div>
 </header>
 
 <div class="bg-[#1a212e] px-3 py-2.5 flex justify-between items-center sticky top-[86px] z-20">
-  <span class="text-[11px] font-black tracking-widest" id="main-title">LIGAS</span>
+  <div class="flex items-center gap-2">
+    <button id="btn-back" onclick="backToLigas()" class="hidden w-6 h-6 bg-[#facc15] text-black rounded-full text-[10px] flex items-center justify-center"><i class="fa-solid fa-arrow-left"></i></button>
+    <span class="text-[11px] font-black tracking-widest" id="main-title">LIGAS</span>
+  </div>
   <span id="today-date" class="text-[9px] text-gray-400"></span>
 </div>
 
 <main class="p-3 flex-1">
   <div id="ligas-view">
-    <div id="ligas-list"></div>
-    <div id="liga-selected-header" class="hidden mt-4 bg-[#facc15] text-black p-2.5 rounded-lg text-[11px] font-black flex justify-between">
-      <span id="liga-selected-name"></span><span id="liga-selected-count" class="bg-black text-[#facc15] px-2 py-0.5 rounded-full text-[9px]"></span>
+    <!-- VISTA 1: LISTA DE PAISES -->
+    <div id="paises-container">
+      <div id="ligas-list"></div>
     </div>
-    <input id="q" oninput="filter()" placeholder="🔍 Buscar equipo en esta liga..." class="hidden w-full bg-[#1e2735] text-[12px] rounded-full px-4 py-2.5 my-3 outline-none"/>
-    <div id="list" class="space-y-2 mt-2"></div>
+    <!-- VISTA 2: HORARIOS DE LA LIGA (NUEVA PANTALLA) -->
+    <div id="partidos-container" class="hidden">
+      <div id="liga-selected-header" class="bg-[#facc15] text-black p-2.5 rounded-lg text-[11px] font-black flex justify-between items-center mb-3">
+        <span id="liga-selected-name"></span><span id="liga-selected-count" class="bg-black text-[#facc15] px-2 py-0.5 rounded-full text-[9px]"></span>
+      </div>
+      <input id="q" oninput="filter()" placeholder="🔍 Buscar equipo en esta liga..." class="w-full bg-[#1e2735] text-[12px] rounded-full px-4 py-2.5 mb-3 outline-none"/>
+      <div id="list" class="space-y-2"></div>
+    </div>
   </div>
+
   <div id="fav-view" class="hidden text-[11px] text-gray-400 text-center py-10">Tus favoritos ⭐</div>
   <div id="noticias-view" class="hidden text-[11px] text-gray-400 text-center py-10">Noticias pronto 📰</div>
   <div id="config-view" class="hidden p-3 bg-[#1e2735] rounded-xl text-[11px]">Configuración<br>Zona horaria automática activa<br><br>76SCORES v1.0</div>
 </main>
 
-<!-- ABAJO 4 BOTONES - AMARILLO MEDIO AL SELECCIONAR -->
 <div class="fixed bottom-0 w-full max-w-[430px] bg-[#1a212e] border-t border-gray-800 flex justify-around py-2.5 z-40">
-  <button onclick="setBottom('fav')" id="bb-fav" class="flex flex-col items-center text-gray-500 transition-colors"><i class="fa-regular fa-star text-[18px]"></i><span class="text-[8px] mt-1 font-bold">FAVORITOS</span></button>
-  <button onclick="setBottom('ligas')" id="bb-ligas" class="flex flex-col items-center text-[#facc15] transition-colors"><i class="fa-solid fa-trophy text-[18px]"></i><span class="text-[8px] mt-1 font-bold">LIGAS</span></button>
-  <button onclick="setBottom('noticias')" id="bb-noticias" class="flex flex-col items-center text-gray-500 transition-colors"><i class="fa-regular fa-newspaper text-[18px]"></i><span class="text-[8px] mt-1 font-bold">NOTICIAS</span></button>
-  <button onclick="setBottom('config')" id="bb-config" class="flex flex-col items-center text-gray-500 transition-colors"><i class="fa-solid fa-gear text-[18px]"></i><span class="text-[8px] mt-1 font-bold">CONFIG</span></button>
+  <button onclick="setBottom('fav')" id="bb-fav" class="flex flex-col items-center text-gray-500"><i class="fa-regular fa-star text-[18px]"></i><span class="text-[8px] mt-1 font-bold">FAVORITOS</span></button>
+  <button onclick="setBottom('ligas')" id="bb-ligas" class="flex flex-col items-center text-[#facc15]"><i class="fa-solid fa-trophy text-[18px]"></i><span class="text-[8px] mt-1 font-bold">LIGAS</span></button>
+  <button onclick="setBottom('noticias')" id="bb-noticias" class="flex flex-col items-center text-gray-500"><i class="fa-regular fa-newspaper text-[18px]"></i><span class="text-[8px] mt-1 font-bold">NOTICIAS</span></button>
+  <button onclick="setBottom('config')" id="bb-config" class="flex flex-col items-center text-gray-500"><i class="fa-solid fa-gear text-[18px]"></i><span class="text-[8px] mt-1 font-bold">CONFIG</span></button>
 </div>
 
 </div>
 
 <script>
-let all=[], sport='soccer', bottom='ligas', currentLiga='ecu.1';
+let all=[], currentLiga='ecu.1';
 let userTZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
 document.getElementById('today-date').innerText = new Date().toLocaleDateString('es-EC',{weekday:'short', day:'2-digit', month:'short', timeZone:userTZ});
 
@@ -61,40 +68,32 @@ const PAISES = [
   {pais:'Inglaterra', flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', ligas:[{id:'eng.1', nombre:'Premier League'},{id:'eng.2', nombre:'Championship'}]},
   {pais:'España', flag:'🇪🇸', ligas:[{id:'esp.1', nombre:'LaLiga'},{id:'esp.2', nombre:'LaLiga 2'}]},
   {pais:'Italia', flag:'🇮🇹', ligas:[{id:'ita.1', nombre:'Serie A'},{id:'ita.2', nombre:'Serie B'}]},
-  {pais:'Alemania', flag:'🇩🇪', ligas:[{id:'ger.1', nombre:'Bundesliga'},{id:'ger.2', nombre:'2. Bundesliga'}]},
-  {pais:'Francia', flag:'🇫🇷', ligas:[{id:'fra.1', nombre:'Ligue 1'},{id:'fra.2', nombre:'Ligue 2'}]},
-  {pais:'Argentina', flag:'🇦🇷', ligas:[{id:'arg.1', nombre:'Liga Profesional'},{id:'arg.2', nombre:'Primera Nacional'}]},
-  {pais:'Brasil', flag:'🇧🇷', ligas:[{id:'bra.1', nombre:'Brasileirão A'},{id:'bra.2', nombre:'Brasileirão B'}]},
-  {pais:'México', flag:'🇲🇽', ligas:[{id:'mex.1', nombre:'Liga MX'},{id:'mex.2', nombre:'Liga Expansión'}]},
-  {pais:'EEUU', flag:'🇺🇸', ligas:[{id:'usa.1', nombre:'MLS'},{id:'usa.2', nombre:'USL Championship'}]},
-  {pais:'Internacional', flag:'🏆', ligas:[{id:'uefa.champions', nombre:'Champions League'},{id:'conmebol.libertadores', nombre:'Copa Libertadores'},{id:'conmebol.sudamericana', nombre:'Sudamericana'}]},
+  {pais:'Alemania', flag:'🇩🇪', ligas:[{id:'ger.1', nombre:'Bundesliga'}]},
+  {pais:'Francia', flag:'🇫🇷', ligas:[{id:'fra.1', nombre:'Ligue 1'}]},
+  {pais:'Argentina', flag:'🇦🇷', ligas:[{id:'arg.1', nombre:'Liga Profesional'}]},
+  {pais:'Brasil', flag:'🇧🇷', ligas:[{id:'bra.1', nombre:'Brasileirão A'}]},
+  {pais:'México', flag:'🇲🇽', ligas:[{id:'mex.1', nombre:'Liga MX'}]},
+  {pais:'EEUU', flag:'🇺🇸', ligas:[{id:'usa.1', nombre:'MLS'}]},
+  {pais:'Internacional', flag:'🏆', ligas:[{id:'uefa.champions', nombre:'Champions League'},{id:'conmebol.libertadores', nombre:'Copa Libertadores'}]},
 ];
 
-function setSport(s){ sport=s; document.querySelectorAll('[id^=s-]').forEach(b=>b.className='whitespace-nowrap px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400'); document.getElementById('s-'+s).className='whitespace-nowrap px-3 py-1.5 rounded-full text-[10px] font-black bg-[#ff3b3b]'; if(currentLiga) load(currentLiga); }
-
 function setBottom(b){
- bottom=b;
- document.querySelectorAll('[id^=bb-]').forEach(el=>{
-   el.classList.remove('text-[#facc15]');
-   el.classList.add('text-gray-500');
- });
- const active = document.getElementById('bb-'+b);
- active.classList.remove('text-gray-500');
- active.classList.add('text-[#facc15]');
-
+ document.querySelectorAll('[id^=bb-]').forEach(el=>{el.classList.remove('text-[#facc15]'); el.classList.add('text-gray-500');});
+ document.getElementById('bb-'+b).classList.remove('text-gray-500'); document.getElementById('bb-'+b).classList.add('text-[#facc15]');
  document.getElementById('ligas-view').classList.toggle('hidden', b!=='ligas');
  document.getElementById('fav-view').classList.toggle('hidden', b!=='fav');
  document.getElementById('noticias-view').classList.toggle('hidden', b!=='noticias');
  document.getElementById('config-view').classList.toggle('hidden', b!=='config');
- document.getElementById('main-title').innerText = b.toUpperCase();
+ if(b==='ligas'){ backToLigas(); } else { document.getElementById('main-title').innerText = b.toUpperCase(); }
 }
 
+function setSport(s){ document.querySelectorAll('[id^=s-]').forEach(b=>b.className='whitespace-nowrap px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400'); document.getElementById('s-'+s).className='whitespace-nowrap px-3 py-1.5 rounded-full text-[10px] font-black bg-[#ff3b3b]'; }
+
 async function fetchESPN(url){ try{let r=await fetch(url); return await r.json();}catch(e){let proxy=`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`; let r2=await fetch(proxy); let j2=await r2.json(); return JSON.parse(j2.contents);} }
-function fmtLocal(iso){ if(!iso) return ''; let d=new Date(iso); return d.toLocaleString('es-EC',{hour:'2-digit', minute:'2-digit', timeZone:userTZ}); }
+function fmtLocal(iso){ if(!iso) return ''; let d=new Date(iso); return d.toLocaleString('es-EC',{hour:'2-digit', minute:'2-digit', day:'2-digit', month:'short', timeZone:userTZ}); }
 
 function loadLigas(){
- const c=document.getElementById('ligas-list');
- c.innerHTML = PAISES.map((paisObj,i)=>`
+ document.getElementById('ligas-list').innerHTML = PAISES.map((paisObj,i)=>`
   <div class="mb-1.5">
     <button onclick="togglePais(${i})" class="w-full flex items-center gap-2 bg-[#1e2735] p-3 rounded-xl">
       <span class="text-[18px]">${paisObj.flag}</span>
@@ -102,43 +101,49 @@ function loadLigas(){
       <i id="icon-${i}" class="fa-solid fa-chevron-down text-[10px] text-gray-500"></i>
     </button>
     <div id="pais-${i}" class="hidden mt-1 ml-2 space-y-1">
-      ${paisObj.ligas.map(l=>`<button onclick="selectLiga('${l.id}','${l.nombre}')" class="w-full text-left bg-[#12171f] border ${currentLiga===l.id?'border-[#facc15] text-[#facc15]':'border-gray-800'} p-2.5 rounded-lg text-[11px] flex justify-between"><span>${l.nombre}</span><span class="text-[9px]">›</span></button>`).join('')}
+      ${paisObj.ligas.map(l=>`<button onclick="selectLiga('${l.id}','${l.nombre}')" class="w-full text-left bg-[#12171f] border border-gray-800 p-2.5 rounded-lg text-[11px] flex justify-between"><span>${l.nombre}</span><span>›</span></button>`).join('')}
     </div>
   </div>
  `).join('');
 }
 function togglePais(i){ document.getElementById(`pais-${i}`).classList.toggle('hidden'); document.getElementById(`icon-${i}`).classList.toggle('fa-chevron-down'); document.getElementById(`icon-${i}`).classList.toggle('fa-chevron-up'); }
 
+function backToLigas(){
+ document.getElementById('paises-container').classList.remove('hidden');
+ document.getElementById('partidos-container').classList.add('hidden');
+ document.getElementById('btn-back').classList.add('hidden');
+ document.getElementById('main-title').innerText = 'LIGAS';
+}
+
 async function selectLiga(id,nombre){
  currentLiga=id;
- loadLigas();
- document.getElementById('liga-selected-header').classList.remove('hidden');
+ // CAMBIO DE PANTALLA PERO LIGAS SIGUE ILUMINADO
+ document.getElementById('paises-container').classList.add('hidden');
+ document.getElementById('partidos-container').classList.remove('hidden');
+ document.getElementById('btn-back').classList.remove('hidden');
+ document.getElementById('main-title').innerText = nombre.toUpperCase();
  document.getElementById('liga-selected-name').innerText = nombre.toUpperCase();
- document.getElementById('q').classList.remove('hidden');
  document.getElementById('q').value='';
- document.getElementById('liga-selected-header').scrollIntoView({behavior:'smooth'});
  load(id);
 }
 
 async function load(ligaId){
- ligaId = ligaId || currentLiga;
  const list=document.getElementById('list');
- list.innerHTML='<div class="py-8 text-center text-gray-400 text-[11px]"><i class="fa-solid fa-spinner fa-spin"></i> Cargando...</div>';
+ list.innerHTML='<div class="py-8 text-center text-gray-400 text-[11px]"><i class="fa-solid fa-spinner fa-spin"></i> Cargando horarios...</div>';
  let data=await fetchESPN(`https://site.api.espn.com/apis/site/v2/sports/soccer/${ligaId}/scoreboard`);
  let events=data.events||[];
  all=events.map(ev=>{ const comp=ev.competitions[0]; const h=comp.competitors.find(c=>c.homeAway==='home')||comp.competitors[0]; const a=comp.competitors.find(c=>c.homeAway==='away')||comp.competitors[1]; return {date:comp.date, h:h.team.displayName, a:a.team.displayName, hs:h.score, as:a.score, live:comp.status.type.state==='in', detail:comp.status.type.shortDetail, logoH:h.team.logo, logoA:a.team.logo, search:`${h.team.displayName} ${a.team.displayName}`.toLowerCase()}; });
- document.getElementById('liga-selected-count').innerText = `${all.length} HOY`;
+ document.getElementById('liga-selected-count').innerText = `${all.length} PARTIDOS`;
  render(all);
 }
 function render(arr){
  const c=document.getElementById('list');
- if(!arr.length){c.innerHTML='<div class="p-4 text-center text-[11px] text-gray-500">No hay partidos hoy en esta liga</div>';return;}
- c.innerHTML=arr.map(i=>`<div class="bg-[#1e2735] p-3 rounded-xl border ${i.live?'border-green-500/40':'border-gray-700/20'}"><div class="flex items-center justify-between"><div class="flex items-center gap-2 flex-1"><img src="${i.logoH}" class="w-7 h-7 bg-white rounded-full p-0.5"/><span class="text-[11px] font-bold truncate">${i.h}</span><b class="ml-auto text-[12px]">${i.hs??''}</b></div><div class="mx-2 text-[8px] px-2 py-1 rounded-full ${i.live?'bg-red-500 animate-pulse text-white':'bg-[#0f141e] text-gray-400'}">${i.live?'LIVE':(i.detail||'VS')}</div><div class="flex items-center gap-2 flex-1 justify-end"><b class="text-[12px]">${i.as??''}</b><span class="text-[11px] font-bold truncate">${i.a}</span><img src="${i.logoA}" class="w-7 h-7 bg-white rounded-full p-0.5"/></div></div><div class="text-[9px] text-gray-400 mt-1.5 text-center">${i.date?fmtLocal(i.date):''}</div></div>`).join('');
+ if(!arr.length){c.innerHTML='<div class="p-4 text-center text-[11px] text-gray-500">No hay partidos programados</div>';return;}
+ c.innerHTML=arr.map(i=>`<div class="bg-[#1e2735] p-3 rounded-xl border ${i.live?'border-green-500/40':'border-gray-700/20'}"><div class="flex items-center justify-between"><div class="flex items-center gap-2 flex-1"><img src="${i.logoH}" class="w-7 h-7 bg-white rounded-full p-0.5"/><span class="text-[11px] font-bold truncate">${i.h}</span><b class="ml-auto text-[12px]">${i.hs??''}</b></div><div class="mx-2 text-[8px] px-2 py-1 rounded-full ${i.live?'bg-red-500 animate-pulse text-white':'bg-[#0f141e] text-gray-400'}">${i.live?'LIVE':(i.detail||'VS')}</div><div class="flex items-center gap-2 flex-1 justify-end"><b class="text-[12px]">${i.as??''}</b><span class="text-[11px] font-bold truncate">${i.a}</span><img src="${i.logoA}" class="w-7 h-7 bg-white rounded-full p-0.5"/></div></div><div class="text-[9px] text-[#facc15] mt-1.5 text-center font-bold">⏰ ${i.date?fmtLocal(i.date):''} - HORA ECUADOR (${userTZ})</div></div>`).join('');
 }
 function filter(){ let q=document.getElementById('q').value.toLowerCase(); render(all.filter(x=>x.search.includes(q))); }
 
 loadLigas();
-load(currentLiga);
 </script>
 </body>
 </html>
