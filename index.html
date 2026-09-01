@@ -1,128 +1,119 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>76Scores</title>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>76Scores - Real API</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family: -apple-system, sans-serif;}
-body{background:#0f1419;color:white;padding-bottom:80px;}
-.header{background:#1a222c;padding:15px;text-align:center;font-weight:bold;font-size:18px;position:sticky;top:0;z-index:10}
-.league-list{padding:10px}
-.league-item{background:#1e2a36;padding:15px;margin:8px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
-.league-item:active{transform:scale(0.98)}
-.tabs{display:flex;background:#1a222c;padding:5px;gap:5px;position:sticky;top:52px}
-.tab{flex:1;padding:10px;text-align:center;border-radius:8px;background:#253141;cursor:pointer;font-size:14px}
-.tab.active{background:#2e8bff;color:white}
-.match-card{background:#1e2a36;margin:8px;padding:12px;border-radius:12px;display:flex;justify-content:space-between;align-items:center}
-.team{display:flex;align-items:center;gap:8px;width:40%}
-.team.right{justify-content:flex-end}
-.score{background:#0f1419;padding:6px 12px;border-radius:6px;font-weight:bold;min-width:60px;text-align:center}
-.table{width:100%;border-collapse:collapse;margin-top:10px}
-.table th{padding:10px;font-size:12px;color:#8a9bb0;text-align:left;background:#1a222c;position:sticky;top:95px}
-.table td{padding:12px 10px;border-bottom:1px solid #1e2a36;font-size:14px}
-.table tr.top4{border-left:3px solid #2e8bff}
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#1a222c;display:flex;justify-content:space-around;padding:10px 0;border-top:1px solid #253141;z-index:100}
-.nav-item{display:flex;flex-direction:column;align-items:center;font-size:11px;color:#8a9bb0;cursor:pointer;gap:3px}
+*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+body{background:#0f1419;color:#fff;padding-bottom:80px}
+.header{background:#1a222c;padding:15px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:20}
+.header b{font-size:18px}
+.back{cursor:pointer;background:#253141;padding:6px 12px;border-radius:8px;font-size:13px}
+.league-item{background:#1e2a36;padding:16px;margin:8px 10px;border-radius:14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:.2s}
+.league-item:active{transform:scale(.98)}
+.tabs{display:flex;background:#1a222c;padding:6px;gap:6px;position:sticky;top:53px;z-index:10}
+.tab{flex:1;padding:11px;text-align:center;border-radius:9px;background:#253141;cursor:pointer;font-size:14px;font-weight:600}
+.tab.active{background:#2e8bff}
+.match-card{background:#1e2a36;margin:8px 10px;padding:14px;border-radius:12px;display:flex;align-items:center;justify-content:space-between}
+.team{width:36%;display:flex;align-items:center;gap:6px;font-size:14px}
+.team.right{justify-content:flex-end;text-align:right}
+.team img{width:22px;height:22px;object-fit:contain}
+.score{background:#0f1419;padding:8px 12px;border-radius:8px;min-width:78px;text-align:center}
+.score b{font-size:15px}
+.live{color:#ff3b30;font-size:10px;font-weight:800}
+.table{width:100%;border-collapse:collapse}
+.table th{padding:10px 8px;font-size:11px;color:#8a9bb0;background:#1a222c;text-align:left;position:sticky;top:100px}
+.table td{padding:11px 8px;border-bottom:1px solid #1f2b38;font-size:13px}
+.table td b{color:#fff}
+.loader{padding:50px 20px;text-align:center;color:#8a9bb0}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#1a222c;display:flex;justify-content:space-around;padding:10px 0;border-top:1px solid #253141}
+.nav-item{color:#8a9bb0;font-size:11px;display:flex;flex-direction:column;align-items:center;gap:2px}
 .nav-item.active{color:#2e8bff}
-.nav-item span{font-size:20px}
 .hidden{display:none}
-.live{color:#ff3b30;font-size:10px;font-weight:bold}
 </style>
 </head>
 <body>
-<div class="header" id="headerTitle">76Scores</div>
-<div id="view-favoritos" class="view hidden"><div style="padding:20px;text-align:center;color:#8a9bb0;margin-top:50px">⭐ Tus partidos favoritos aparecerán aquí</div></div>
-<div id="view-ligas" class="view"><div class="league-list" id="leagueList"></div></div>
-<div id="view-partidos-liga" class="view hidden">
-<div class="tabs"><div class="tab active" onclick="switchTab('partidos')">Partidos</div><div class="tab" onclick="switchTab('tabla')">Tabla</div></div>
-<div id="matchesContainer"></div>
-<div id="tableContainer" class="hidden" style="padding:10px"><table class="table" id="posTable"></table></div>
+<div class="header"><b id="title">76Scores</b><div id="backBtn" class="back hidden" onclick="goHome()">‹ Volver</div></div>
+<div id="viewHome"><div id="leagueList"></div></div>
+<div id="viewLiga" class="hidden">
+<div class="tabs"><div class="tab active" id="tabP" onclick="switchTab('p')">Partidos</div><div class="tab" id="tabT" onclick="switchTab('t')">Tabla</div></div>
+<div id="matches" class="loader">Cargando partidos reales...</div>
+<div id="tableWrap" class="hidden"><table class="table" id="ptable"></table></div>
 </div>
-<div id="view-noticias" class="view hidden"><div style="padding:20px;text-align:center;color:#8a9bb0;margin-top:50px">📰 Noticias próximamente</div></div>
-<div id="view-config" class="view hidden"><div style="padding:20px"><h3>Configuración</h3><br><p style="color:#8a9bb0">⚙️ Tema oscuro activo</p></div></div>
-<div class="bottom-nav">
-<div class="nav-item" onclick="showView('favoritos')"><span>⭐</span>Favoritos</div>
-<div class="nav-item active" onclick="showView('ligas')"><span>🏆</span>Ligas</div>
-<div class="nav-item" onclick="showView('noticias')"><span>📰</span>Noticias</div>
-<div class="nav-item" onclick="showView('config')"><span>⚙️</span>Config</div>
-</div>
+<div class="bottom-nav"><div class="nav-item active">🏆<br>Ligas</div></div>
 <script>
+const API_KEY = "5ff0e0b271ee58df90e934cee0ed78c7";
 const ligas = [
-{id:'PL',name:'Premier League',flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿'},
-{id:'LL',name:'La Liga',flag:'🇪🇸'},
-{id:'SA',name:'Serie A',flag:'🇮🇹'},
-{id:'BL',name:'Bundesliga',flag:'🇩🇪'},
-{id:'L1',name:'Ligue 1',flag:'🇫🇷'},
-{id:'EC',name:'LigaPro Ecuador',flag:'🇪🇨'}
+{id:39,name:"Premier League",flag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿",season:2024},
+{id:140,name:"La Liga",flag:"🇪🇸",season:2024},
+{id:135,name:"Serie A",flag:"🇮🇹",season:2024},
+{id:78,name:"Bundesliga",flag:"🇩🇪",season:2024},
+{id:61,name:"Ligue 1",flag:"🇫🇷",season:2024},
+{id:242,name:"LigaPro Ecuador",flag:"🇪🇨",season:2025}
 ];
-const partidosPL = [
-{local:'Man City',visitante:'Arsenal',hora:'14:30',live:true,score:'2-1'},
-{local:'Liverpool',visitante:'Chelsea',hora:'12:00',score:'0-0'},
-{local:'Man United',visitante:'Tottenham',hora:'14:45',score:'1-1'},
-{local:'Newcastle',visitante:'Aston Villa',hora:'09:00',score:'3-0'},
-{local:'Brighton',visitante:'West Ham',hora:'09:00',score:'1-2'},
-{local:'Everton',visitante:'Fulham',hora:'11:30',score:'2-2'},
-{local:'Brentford',visitante:'Crystal Palace',hora:'14:30',score:'0-1'},
-{local:'Wolves',visitante:'Burnley',hora:'09:00',score:'1-0'}
-];
-const tablaPL = [
-{pos:1,equipo:'Man City',pj:28,pts:65},
-{pos:2,equipo:'Arsenal',pj:28,pts:62},
-{pos:3,equipo:'Liverpool',pj:28,pts:60},
-{pos:4,equipo:'Aston Villa',pj:28,pts:55},
-{pos:5,equipo:'Tottenham',pj:28,pts:50},
-{pos:6,equipo:'Man United',pj:28,pts:48},
-{pos:7,equipo:'Newcastle',pj:28,pts:44},
-{pos:8,equipo:'Brighton',pj:28,pts:42},
-{pos:9,equipo:'Chelsea',pj:28,pts:39},
-{pos:10,equipo:'West Ham',pj:28,pts:38}
-];
-let ligaActual = '';
-function showView(v){
-document.querySelectorAll('.view').forEach(e=>e.classList.add('hidden'));
-document.querySelectorAll('.nav-item').forEach(e=>e.classList.remove('active'));
-document.getElementById('view-'+v).classList.remove('hidden');
-if(v==='ligas') renderLigas();
-event?.currentTarget?.classList?.add('active');
-if(v==='ligas') document.querySelectorAll('.nav-item')[1].classList.add('active');
-document.getElementById('headerTitle').innerText = v==='ligas'? '76Scores - Ligas' : v.charAt(0).toUpperCase()+v.slice(1);
+let ligaActual=null;
+function renderHome(){
+document.getElementById('leagueList').innerHTML = ligas.map(l=>`<div class="league-item" onclick="openLiga(${l.id})"><div style="display:flex;align-items:center;gap:10px"><span style="font-size:20px">${l.flag}</span><b>${l.name}</b></div><span>›</span></div>`).join('');
 }
-function renderLigas(){
-const c = document.getElementById('leagueList');
-c.innerHTML = ligas.map(l=>`<div class="league-item" onclick="abrirLiga('${l.id}','${l.name}')"><div>${l.flag} ${l.name}</div><div>›</div></div>`).join('');
+function goHome(){
+document.getElementById('viewHome').classList.remove('hidden');
+document.getElementById('viewLiga').classList.add('hidden');
+document.getElementById('backBtn').classList.add('hidden');
+document.getElementById('title').innerText='76Scores';
 }
-function abrirLiga(id,nombre){
-ligaActual=id;
-document.querySelectorAll('.view').forEach(e=>e.classList.add('hidden'));
-document.getElementById('view-partidos-liga').classList.remove('hidden');
-document.getElementById('headerTitle').innerText = nombre;
-renderPartidos();
-renderTabla();
-switchTab('partidos');
+async function openLiga(id){
+ligaActual = ligas.find(x=>x.id===id);
+document.getElementById('viewHome').classList.add('hidden');
+document.getElementById('viewLiga').classList.remove('hidden');
+document.getElementById('backBtn').classList.remove('hidden');
+document.getElementById('title').innerText=ligaActual.flag+" "+ligaActual.name;
+switchTab('p');
+loadMatches();
+loadTable();
 }
-function renderPartidos(){
-const c = document.getElementById('matchesContainer');
-let partidos = ligaActual==='PL'? partidosPL : [{local:'Equipo A',visitante:'Equipo B',hora:'15:00',score:'0-0'}];
-c.innerHTML = partidos.map(p=>`<div class="match-card"><div class="team">${p.local}</div><div class="score">${p.live?'<div class=live>EN VIVO</div>':''}${p.score}<div style="font-size:10px;color:#8a9bb0">${p.hora}</div></div><div class="team right">${p.visitante}</div></div>`).join('');
+function switchTab(t){
+document.getElementById('tabP').classList.toggle('active', t==='p');
+document.getElementById('tabT').classList.toggle('active', t==='t');
+document.getElementById('matches').classList.toggle('hidden', t!=='p');
+document.getElementById('tableWrap').classList.toggle('hidden', t!=='t');
 }
-function renderTabla(){
-const t = document.getElementById('posTable');
-t.innerHTML = `<tr><th>#</th><th>Equipo</th><th>PJ</th><th>Pts</th></tr>` + tablaPL.map(e=>`<tr class="${e.pos<=4?'top4':''}"><td>${e.pos}</td><td>${e.equipo}</td><td>${e.pj}</td><td><b>${e.pts}</b></td></tr>`).join('');
+async function loadMatches(){
+const box=document.getElementById('matches');
+box.classList.remove('hidden');
+box.innerHTML='<div class="loader">⚽ Cargando partidos reales de '+ligaActual.name+'...</div>';
+try{
+let season=ligaActual.season;
+let url=`https://v3.football.api-sports.io/fixtures?league=${ligaActual.id}&season=${season}&next=20`;
+let r=await fetch(url,{headers:{'x-apisports-key':API_KEY}});
+let j=await r.json();
+let fixtures=j.response;
+if(!fixtures || fixtures.length===0){
+let r2=await fetch(`https://v3.football.api-sports.io/fixtures?league=${ligaActual.id}&season=${season}&last=20`,{headers:{'x-apisports-key':API_KEY}});
+let j2=await r2.json();
+fixtures=j2.response;
 }
-function switchTab(tab){
-document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
-if(tab==='partidos'){
-document.querySelectorAll('.tab')[0].classList.add('active');
-document.getElementById('matchesContainer').classList.remove('hidden');
-document.getElementById('tableContainer').classList.add('hidden');
-}else{
-document.querySelectorAll('.tab')[1].classList.add('active');
-document.getElementById('matchesContainer').classList.add('hidden');
-document.getElementById('tableContainer').classList.remove('hidden');
+if(!fixtures || fixtures.length===0){ box.innerHTML='<div class="loader">No hay partidos en esta fecha para '+ligaActual.name+'</div>'; return; }
+box.innerHTML=fixtures.map(f=>{
+let h=f.teams.home; let a=f.teams.away;
+let gh=f.goals.home; let ga=f.goals.away;
+let status=f.fixture.status.short;
+let hora=new Date(f.fixture.date).toLocaleString('es-EC',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+let marcador = status==='NS'? `<div style="font-size:12px;color:#8a9bb0">${hora}</div>` : `<b>${gh??0} - ${ga??0}</b><div style="font-size:10px;color:${status==='FT'?'#8a9bb0':'#ff3b30'}">${status==='FT'?'Final':status==='1H'||status==='2H'?'EN VIVO '+f.goals.home+'-'+f.goals.away:status}</div>`;
+let live = (status==='1H'||status==='2H'||status==='HT')? '<div class="live">● LIVE</div>' : '';
+return `<div class="match-card"><div class="team"><img src="${h.logo}">${h.name}</div><div class="score">${live}${marcador}</div><div class="team right">${a.name}<img src="${a.logo}"></div></div>`;
+}).join('');
+}catch(e){ box.innerHTML='<div class="loader">Error API: '+e.message+'<br>Verifica que tu key esté activa</div>';}
 }
+async function loadTable(){
+try{
+let r=await fetch(`https://v3.football.api-sports.io/standings?league=${ligaActual.id}&season=${ligaActual.season}`,{headers:{'x-apisports-key':API_KEY}});
+let j=await r.json();
+let standings=j.response[0]?.league?.standings[0];
+if(!standings){ document.getElementById('ptable').innerHTML='<tr><td>Tabla no disponible</td></tr>'; return; }
+document.getElementById('ptable').innerHTML=`<tr><th>#</th><th>Equipo</th><th>PJ</th><th>G</th><th>Pts</th></tr>`+standings.map(s=>`<tr style="${s.rank<=4?'border-left:3px solid #2e8bff':''}"><td>${s.rank}</td><td style="display:flex;align-items:center;gap:6px"><img src="${s.team.logo}" width="18">${s.team.name}</td><td>${s.all.played}</td><td>${s.all.win}</td><td><b>${s.points}</b></td></tr>`).join('');
+}catch(e){}
 }
-renderLigas();
+renderHome();
 </script>
 </body>
 </html>
