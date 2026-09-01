@@ -11,10 +11,9 @@
 
 <header class="p-3 bg-[#1a212e] sticky top-0 z-30">
   <div class="flex justify-between items-center">
-    <h1 class="font-black">76<span class="text-[#ff3b3b]">SCORES</span></h1>
-    <span id="user-tz" class="text-[8px] bg-[#ff3b3b] px-2 py-1 rounded-full text-white">🕒 HORA LOCAL</span>
+    <h1 class="font-black text-[18px]">76<span class="text-[#ff3b3b]">SCORES</span></h1>
   </div>
-  <div class="flex gap-1.5 mt-2 overflow-x-auto">
+  <div class="flex gap-1.5 mt-3 overflow-x-auto">
     <button onclick="setSport('soccer')" id="s-soccer" class="px-3 py-1.5 rounded-full text-[10px] font-black bg-[#ff3b3b]">⚽ FÚTBOL</button>
     <button onclick="setSport('basket')" id="s-basket" class="px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400">🏀 BASKET</button>
     <button onclick="setSport('mlb')" id="s-mlb" class="px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400">⚾ BÉISBOL</button>
@@ -60,7 +59,6 @@
 
 <script>
 let all=[], allFuture=[], sport='soccer', basketLiga='nba', tab='p';
-// MOD #1: Detecta zona automaticamente pero NO la muestra
 let userTZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 function setSport(s){
@@ -91,7 +89,6 @@ async function fetchESPN(url){
  try{ let r=await fetch(url); return await r.json(); }
  catch(e){ let proxy=`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`; let r2=await fetch(proxy); let j2=await r2.json(); return JSON.parse(j2.contents); }
 }
-// MOD #1: Hora local automatica sin mostrar America/Guayaquil
 function fmtLocal(iso){
  if(!iso) return 'Por definir';
  let d=new Date(iso);
@@ -128,7 +125,7 @@ async function loadFuture(){
   const comp=ev.competitions[0]; const h=comp.competitors.find(c=>c.homeAway==='home')||comp.competitors[0]; const a=comp.competitors.find(c=>c.homeAway==='away')||comp.competitors[1];
   return {date:comp.date, h:h.team.displayName, a:a.team.displayName, logoH:h.team.logo, logoA:a.team.logo, search:`${h.team.displayName} ${a.team.displayName}`.toLowerCase()};
  }).sort((a,b)=> new Date(a.date)-new Date(b.date));
- info.innerText=`Fixture: ${allFuture.length} partidos futuros • ${liga.toUpperCase()}`;
+ info.innerText=`Fixture: ${allFuture.length} partidos futuros`;
  let byMonth={}; allFuture.forEach(m=>{ let k=new Date(m.date).toLocaleString('es-EC',{month:'long', year:'numeric', timeZone:userTZ}); if(!byMonth[k]) byMonth[k]=[]; byMonth[k].push(m); });
  c.innerHTML=Object.entries(byMonth).map(([month, games])=>`<div class="mb-3"><div class="text-[10px] font-black text-[#ff3b3b] mb-1 uppercase">${month}</div>${games.map(i=>`<div class="bg-[#1e2735] p-2.5 rounded-xl border border-gray-700/20 mb-1.5 flex items-center justify-between"><div class="flex items-center gap-2 flex-1"><img src="${i.logoH}" class="w-5 h-5 bg-white rounded-full"/><span class="text-[11px] font-bold truncate">${i.h}</span></div><div class="text-center"><div class="text-[9px] text-gray-300">${fmtLocal(i.date)}</div><div class="text-[8px] text-gray-500">vs</div></div><div class="flex items-center gap-2 flex-1 justify-end"><span class="text-[11px] font-bold truncate">${i.a}</span><img src="${i.logoA}" class="w-5 h-5 bg-white rounded-full"/></div></div>`).join('')}</div>`).join('');
 }
