@@ -2,36 +2,35 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, StatusBar, RefreshControl, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-// --- CONFIGURACIÓN ---
 const SPORTS = ['FÚTBOL', 'BASKET', 'BÉISBOL', 'TENIS', 'FÚTBOL AMERICANO', 'BOX'];
 const FREE_API = 'https://site.api.espn.com/apis/site/v2/sports';
 
 export default function App() {
   const [activeSport, setActiveSport] = useState('FÚTBOL');
-  const [activeTab, setActiveTab] = useState('HOY'); // HOY | FAVORITOS | LIGAS | NOTICIAS | CONFIG
+  const [activeTab, setActiveTab] = useState('HOY');
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
-  // MODIFICACIÓN #1: Zona horaria 100% automática del dispositivo
-  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone; // Ej: America/Guayaquil
-  const timeZoneOffset = new Date().toLocaleTimeString('es-EC', { timeZoneName: 'short' }).split(' ').pop(); // GMT-5
+  // MODIFICACIÓN #1: Zona horaria 100% automática
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone; // America/Guayaquil
+  const timeZoneOffset = new Date().toLocaleTimeString('es-EC', { timeZoneName: 'short' }).split(' ').pop();
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('es-EC', {
-      weekday: 'short', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', hour12: true, timeZone
+      weekday: 'short', day: '2-digit', month: 'short',
+      hour: '2-digit', minute: '2-digit', hour12: true, timeZone
     }) + ` ${timeZoneOffset}`;
   };
 
   const fetchGames = async () => {
-    setLoading(true);
     try {
       let endpoint = '';
-      if (activeSport === 'FÚTBOL') endpoint = `${FREE_API}/soccer/eng.1/scoreboard`;
+      if (activeSport === 'FÚTBOL') endpoint = `${FREE_API}/soccer/ecu.1/scoreboard`;
       if (activeSport === 'BASKET') endpoint = `${FREE_API}/basketball/nba/scoreboard`;
       if (activeSport === 'BÉISBOL') endpoint = `${FREE_API}/baseball/mlb/scoreboard`;
       if (activeSport === 'FÚTBOL AMERICANO') endpoint = `${FREE_API}/football/nfl/scoreboard`;
-      // Tenis y Box usan mismo endpoint con fallback
       if (activeSport === 'TENIS' || activeSport === 'BOX') endpoint = `${FREE_API}/soccer/eng.1/scoreboard`;
 
       const res = await fetch(endpoint);
@@ -41,45 +40,53 @@ export default function App() {
       setGames([]);
     }
     setLoading(false);
+    setRefreshing(false);
   };
 
   useEffect(() => { fetchGames(); }, [activeSport]);
   useEffect(() => {
-    const interval = setInterval(fetchGames, 30000); // auto update cada 30s
+    const interval = setInterval(fetchGames, 30000);
     return () => clearInterval(interval);
   }, [activeSport]);
 
   const renderHome = () => (
     <>
-      {/* MODIFICACIÓN #2: Barra deportes deslizable */}
+      {/* Barra deslizable deportes */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.sportsBar}>
         {SPORTS.map(s => (
-          <TouchableOpacity key={s} onPress={() => setActiveSport(s)} style={[styles.sportBtn, activeSport === s && styles.sportBtnActive]}>
+          <TouchableOpacity key={s} onPress={() => setActiveSport(s)}
+            style={[styles.sportBtn, activeSport === s && styles.sportBtnActive]}>
             <Text style={[styles.sportText, activeSport === s && styles.sportTextActive]}>{s}</Text>
           </TouchableOpacity>
         ))}
       </ScrollView>
 
-      {/* MODIFICACIÓN #3 y #4: Solo HOY, sin tabs de Fixture/Tabla y sin selector de Liga */}
       <View style={styles.hoyHeader}>
         <Text style={styles.hoyText}>HOY</Text>
-        <Text style={styles.hoySub}> {timeZone} </Text>
+        <Text style={styles.hoySub}>{timeZone} • {timeZoneOffset}</Text>
       </View>
 
-      {loading? <ActivityIndicator size="large" color="#00ff88" style={{marginTop: 50}}/> :
-      <ScrollView refreshControl={<RefreshControl refreshing={loading} onRefresh={fetchGames} />}>
-        {games.map((ev) => (
-          <View key={ev.id} style={styles.card}>
-            <Text style={styles.league}>{ev.competitions?.[0]?.competitors? ev.competitions[0].type?.abbreviation : activeSport}</Text>
-            <View style={styles.matchRow}>
-              <View style={styles.team}><Text style={styles.teamName}>{ev.competitions?.[0]?.competitors?.[0]?.team?.displayName || 'Local'}</Text></View>
-              <View style={styles.scoreBox}><Text style={styles.score}>{ev.competitions?.[0]?.competitors?.[0]?.score || '0'} - {ev.competitions?.[0]?.competitors?.[1]?.score || '0'}</Text><Text style={styles.status}>{ev.status?.type?.detail || 'Scheduled'}</Text></View>
-              <View style={styles.team}><Text style={styles.teamName}>{ev.competitions?.[0]?.competitors?.[1]?.team?.displayName || 'Visita'}</Text></View>
+      {loading? <ActivityIndicator color="#ff3b3b" /> :
+        games.map((ev, i) => {
+          const comp = ev.competitions?.[0];
+          return (
+            <View key={i} style={styles.card}>
+              <Text style={styles.league}>{comp?.type?.abbreviation || activeSport} • {formatDate(ev.date)}</Text>
+              <View style={styles.matchRow}>
+                <View style={styles.team}>
+                  <Text style={styles.teamName}>{comp?.competitors?.[0]?.team?.displayName || 'Local'}</Text>
+                  <Text style={styles.score}>{comp?.competitors?.[0]?.score || '0'}</Text>
+                </View>
+                <Text style={styles.vs}>vs</Text>
+                <View style={styles.team}>
+                  <Text style={styles.score}>{comp?.competitors?.[1]?.score || '0'}</Text>
+                  <Text style={styles.teamName}>{comp?.competitors?.[1]?.team?.displayName || 'Visita'}</Text>
+                </View>
+              </View>
+              <Text style={styles.status}>{ev.status?.type?.detail || 'Scheduled'} • {comp?.status?.type?.shortDetail || ''}</Text>
             </View>
-            <Text style={styles.date}>{formatDate(ev.date)}</Text>
-          </View>
-        ))}
-      </ScrollView>
+          )
+        })
       }
     </>
   );
@@ -87,22 +94,27 @@ export default function App() {
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />
-      <View style={styles.header}><Text style={styles.logo}>76SCORES</Text></View>
-
-      <View style={{flex:1}}>
-        {activeTab === 'HOY' && renderHome()}
-        {activeTab === 'LIGAS' && <View style={styles.center}><Text style={styles.empty}>Pantalla de LIGAS - esperando tu lista</Text></View>}
-        {activeTab === 'FAVORITOS' && <View style={styles.center}><Text style={styles.empty}>Tus favoritos</Text></View>}
-        {activeTab === 'NOTICIAS' && <View style={styles.center}><Text style={styles.empty}>Noticias</Text></View>}
-        {activeTab === 'CONFIG' && <View style={styles.center}><Text style={styles.empty}>Configuración - Zona: {timeZone}</Text></View>}
+      <View style={styles.header}>
+        <Text style={styles.logo}>76SCORES</Text>
+        <Text style={styles.tz}>{timeZone}</Text>
       </View>
 
-      {/* MODIFICACIÓN #3: Bottom con 4 botones */}
+      <ScrollView
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); fetchGames(); }} />}
+      >
+        {activeTab === 'HOY' && renderHome()}
+        {activeTab === 'LIGAS' && <Text style={styles.center}>Pantalla de LIGAS - esperando tu lista</Text>}
+        {activeTab === 'FAVORITOS' && <Text style={styles.center}>Tus favoritos</Text>}
+        {activeTab === 'NOTICIAS' && <Text style={styles.center}>Noticias</Text>}
+        {activeTab === 'CONFIG' && <Text style={styles.center}>Configuración - Zona: {timeZone}</Text>}
+      </ScrollView>
+
       <View style={styles.bottomNav}>
-        <TouchableOpacity onPress={() => setActiveTab('FAVORITOS')} style={styles.navBtn}><Ionicons name="star" size={24} color={activeTab==='FAVORITOS'?'#00ff88':'#888'} /><Text style={styles.navText}>Favoritos</Text></TouchableOpacity>
-        <TouchableOpacity onPress={() => setActiveTab('LIGAS')} style={styles.navBtn}><Ionicons name="trophy" size={24} color={activeTab==='LIGAS'?'#00ff88':'#888'} /><Text style={styles.navText}>Ligas</Text></TouchableOpacity>
-        <TouchableOpacity onPress={() => setActiveTab('NOTICIAS')} style={styles.navBtn}><Ionicons name="newspaper" size={24} color={activeTab==='NOTICIAS'?'#00ff88':'#888'} /><Text style={styles.navText}>Noticias</Text></TouchableOpacity>
-        <TouchableOpacity onPress={() => setActiveTab('CONFIG')} style={styles.navBtn}><Ionicons name="settings" size={24} color={activeTab==='CONFIG'?'#00ff88':'#888'} /><Text style={styles.navText}>Config</Text></TouchableOpacity>
+        {['HOY', 'FAVORITOS', 'LIGAS', 'NOTICIAS', 'CONFIG'].map(t => (
+          <TouchableOpacity key={t} onPress={() => setActiveTab(t)} style={styles.navBtn}>
+            <Text style={[styles.navText, activeTab === t && { color: '#ff3b3b' }]}>{t}</Text>
+          </TouchableOpacity>
+        ))}
       </View>
     </View>
   );
@@ -110,18 +122,26 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#0f1419', paddingTop: 40 },
-  header: { padding: 15, backgroundColor: '#1a242f' }, logo: { color: '#fff', fontSize: 22, fontWeight: 'bold' },
+  header: { padding: 15, backgroundColor: '#1a242f', flexDirection: 'row', justifyContent: 'space-between' },
+  logo: { color: '#fff', fontSize: 22, fontWeight: 'bold' },
+  tz: { color: '#888', fontSize: 10 },
   sportsBar: { maxHeight: 50, backgroundColor: '#1a242f', paddingVertical: 8 },
   sportBtn: { paddingHorizontal: 16, paddingVertical: 6, marginHorizontal: 5, borderRadius: 20, backgroundColor: '#2a3542' },
-  sportBtnActive: { backgroundColor: '#00ff88' }, sportText: { color: '#aaa', fontWeight: 'bold', fontSize: 12 }, sportTextActive: { color: '#000' },
+  sportBtnActive: { backgroundColor: '#00f8f8' },
+  sportText: { color: '#aaa', fontWeight: 'bold', fontSize: 12 },
+  sportTextActive: { color: '#000' },
   hoyHeader: { flexDirection: 'row', justifyContent: 'space-between', padding: 15, backgroundColor: '#0f1419' },
-  hoyText: { color: '#fff', fontWeight: 'bold', fontSize: 16 }, hoySub: { color: '#888', fontSize: 12 },
+  hoyText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
+  hoySub: { color: '#888', fontSize: 12 },
   card: { backgroundColor: '#1e2a38', marginHorizontal: 10, marginBottom: 10, borderRadius: 12, padding: 12 },
   matchRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  team: { flex: 1, alignItems: 'center' }, teamName: { color: '#fff', fontSize: 13, textAlign: 'center' },
-  scoreBox: { alignItems: 'center' }, score: { color: '#fff', fontWeight: 'bold', fontSize: 16 }, status: { color: '#00ff88', fontSize: 10 },
-  league: { color: '#888', fontSize: 10, marginBottom: 8 }, date: { color: '#888', fontSize: 11, textAlign: 'center', marginTop: 8 },
+  team: { flex: 1, alignItems: 'center' },
+  teamName: { color: '#fff', fontSize: 13, textAlign: 'center' },
+  score: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
+  status: { color: '#00f8f8', fontSize: 10, marginTop: 8 },
+  league: { color: '#888', fontSize: 10, marginBottom: 8 },
   bottomNav: { flexDirection: 'row', backgroundColor: '#1a242f', paddingVertical: 10, borderTopWidth: 1, borderColor: '#222' },
-  navBtn: { flex: 1, alignItems: 'center' }, navText: { color: '#888', fontSize: 10, marginTop: 2 },
-  center: { flex: 1, justifyContent: 'center', alignItems: 'center' }, empty: { color: '#888' }
+  navBtn: { flex: 1, alignItems: 'center' },
+  navText: { color: '#888', fontSize: 10, marginTop: 2 },
+  center: { flex: 1, justifyContent: 'center', alignItems: 'center', color: '#888', textAlign: 'center', marginTop: 50 }
 });
