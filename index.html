@@ -2,60 +2,47 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>76SCORES - 16 EQUIPOS</title>
+<title>76SCORES - 16 EQUIPOS FINAL</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body class="bg-[#0a0e14] text-white flex justify-center">
 <div class="w-full max-w-[430px] bg-[#12171f] min-h-screen flex flex-col pb-[80px]">
 <header class="p-3 bg-[#1a212e] sticky top-0 z-30 flex justify-between items-center">
-  <h1 class="font-black text-[18px]">76<span class="text-[#ff3b3b]">SCORES</span> <span class="text-[9px] text-gray-400 ml-2">FASE INICIAL - FECHA 28</span></h1>
-  <span class="text-[7px] bg-green-600 px-2 py-1 rounded-full font-black">16 EQUIPOS OK</span>
+  <h1 class="font-black text-[18px]">76<span class="text-[#ff3b3b]">SCORES</span> <span class="text-[9px] text-gray-400 ml-2">FECHA 28 - 2 SEPT 2026</span></h1>
+  <span class="text-[7px] bg-green-600 px-2 py-1 rounded-full font-black">ONLINE</span>
 </header>
 <div class="bg-[#1a212e] px-3 py-2.5 flex gap-2 sticky top-[56px] z-20">
-  <span class="text-[10px] bg-[#ff3b3b] px-2.5 py-1 rounded-full font-black">HOY 2 SEPT 2026</span>
+  <span class="text-[10px] bg-[#ff3b3b] px-2.5 py-1 rounded-full font-black">HOY 2 SEPT</span>
   <button onclick="toggleTabla()" class="text-[9px] bg-green-600 px-2.5 py-1 rounded-full font-black">TABLA</button>
 </div>
 <main class="p-3 flex-1">
   <div id="partidos-view"><div id="list" class="space-y-6"></div></div>
   <div id="tabla-view" class="hidden"><div class="bg-[#1e2735] p-3 rounded-xl"><div class="flex justify-between items-center mb-3"><span class="text-[11px] font-black">TABLA LIGAPRO 2026</span><button onclick="toggleTabla()" class="text-[10px] bg-[#0f141e] px-2 py-1 rounded-full">X</button></div><table class="w-full text-[10px]"><thead class="text-gray-400 text-[9px]"><tr><th class="text-left py-1">#</th><th class="text-left">EQUIPO</th><th>PTS</th><th>PJ</th></tr></thead><tbody id="tabla-body"></tbody></table></div></div>
-  <div id="noticias-view" class="hidden"><div class="bg-[#1e2735] p-3 rounded-xl text-[11px]">Noticias</div></div>
-  <div id="config-view" class="hidden p-3 bg-[#1e2735] rounded-xl text-[11px]">76SCORES v3</div>
 </main>
 <div class="fixed bottom-0 w-full max-w-[430px] bg-[#1a212e] border-t border-gray-800 flex justify-around py-2.5 z-40">
-  <button onclick="setBottom('partidos')" id="bb-partidos" class="flex flex-col items-center text-[#facc15]"><i class="fa-solid fa-futbol text-[18px]"></i><span class="text-[8px] mt-1 font-bold">PARTIDOS</span></button>
-  <button onclick="setBottom('noticias')" id="bb-noticias" class="flex flex-col items-center text-gray-500"><i class="fa-regular fa-newspaper text-[18px]"></i><span class="text-[8px] mt-1 font-bold">NOTICIAS</span></button>
-  <button onclick="setBottom('config')" id="bb-config" class="flex flex-col items-center text-gray-500"><i class="fa-solid fa-gear text-[18px]"></i><span class="text-[8px] mt-1 font-bold">CONFIG</span></button>
+  <button class="flex flex-col items-center text-[#facc15]"><i class="fa-solid fa-futbol text-[18px]"></i><span class="text-[8px] mt-1 font-bold">PARTIDOS</span></button>
 </div>
 </div>
 <script>
-// ESTO ES LO IMPORTANTE - APUNTA A TU CARPETA Ligapro
 const LOGOS = {
-  'Macará':'./Ligapro/Macara.png',
-  'Manta':'./Ligapro/Manta.png',
-  'Deportivo Cuenca':'./Ligapro/Cuenca.png',
-  'Guayaquil City':'./Ligapro/Guayaquil City.png',
-  'Barcelona':'./Ligapro/Barcelona.png',
-  'Independiente del Valle':'./Ligapro/Independiente del Valle.png',
-  'Universidad Católica':'./Ligapro/Catolica.png',
-  'Aucas':'./Ligapro/Aucas.png',
-  'Leones':'./Ligapro/Leones.png',
-  'Orense':'./Ligapro/Orense.png',
-  'Libertad':'./Ligapro/Libertad.png',
-  'Emelec':'./Ligapro/Emelec.png',
-  'Delfín':'./Ligapro/Delfin.png',
-  'Técnico Universitario':'./Ligapro/Tecnico Universitario.png',
-  'Liga de Quito':'./Ligapro/Liga de Quito.png',
-  'Mushuc Runa':'./Ligapro/Mushuc Runa.png',
+  'Macará':'https://upload.wikimedia.org/wikipedia/commons/0/0e/CSD_Macar%C3%A1_logo.png',
+  'Manta':'https://a3.espncdn.com/combiner/i?img=%2Fi%2Fteamlogos%2Fsoccer%2F500%2F12381.png',
+  'Deportivo Cuenca':'https://upload.wikimedia.org/wikipedia/commons/2/2f/Deportivo_Cuenca_logo.png',
+  'Guayaquil City':'https://upload.wikimedia.org/wikipedia/commons/8/8a/Guayaquil_City_F.C._logo.png',
+  'Barcelona':'https://upload.wikimedia.org/wikipedia/commons/5/5a/Escudo_de_Barcelona_SC.png',
+  'Independiente del Valle':'https://upload.wikimedia.org/wikipedia/commons/6/67/Independiente_del_Valle_logo.png',
+  'Universidad Católica':'https://upload.wikimedia.org/wikipedia/commons/f/f8/Escudo_de_Universidad_Cat%C3%B3lica_%28Ecuador%29.png',
+  'Aucas':'https://upload.wikimedia.org/wikipedia/commons/9/9a/Escudo_de_Sociedad_Deportiva_Aucas.png',
+  'Leones':'https://a.espncdn.com/combiner/i?img=%2Fi%2Fteamlogos%2Fsoccer%2F500%2F20649.png',
+  'Orense':'https://upload.wikimedia.org/wikipedia/commons/a/ac/Orense_SC_logo.png',
+  'Libertad':'https://upload.wikimedia.org/wikipedia/commons/7/76/Libertad_FC_Ecuador_logo.png',
+  'Emelec':'https://upload.wikimedia.org/wikipedia/commons/7/76/Escudo_del_Club_Sport_Emelec.png',
+  'Delfín':'https://upload.wikimedia.org/wikipedia/commons/8/84/Delfin_SC_logo.png',
+  'Técnico Universitario':'https://upload.wikimedia.org/wikipedia/commons/9/96/Tecnico_Universitario_logo.png',
+  'Liga de Quito':'https://upload.wikimedia.org/wikipedia/commons/3/36/LDU_Quito_logo.png',
+  'Mushuc Runa':'https://upload.wikimedia.org/wikipedia/commons/3/3b/Mushuc_Runa_SC_logo.png',
 };
-function setBottom(b){
- document.querySelectorAll('[id^=bb-]').forEach(el=>{el.classList.remove('text-[#facc15]');el.classList.add('text-gray-500');});
- document.getElementById('bb-'+b).classList.add('text-[#facc15]');
- document.getElementById('partidos-view').classList.toggle('hidden',b!=='partidos');
- document.getElementById('tabla-view').classList.add('hidden');
- document.getElementById('noticias-view').classList.toggle('hidden',b!=='noticias');
- document.getElementById('config-view').classList.toggle('hidden',b!=='config');
-}
 function toggleTabla(){
  document.getElementById('partidos-view').classList.toggle('hidden');
  document.getElementById('tabla-view').classList.toggle('hidden');
