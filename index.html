@@ -1,70 +1,50 @@
-<!-- REEMPLAZA SOLO LAS FUNCIONES abrirFicha y abrirPartido por estas NUEVAS -->
-
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>76SCORES - LigaPro</title>
+<style>
+body{background:#050a14;color:#fff;font-family:Arial;margin:0;display:flex;justify-content:center}
+.cont{width:100%;max-width:420px;background:#0f172a;min-height:100vh;border-left:1px solid #1e293b;border-right:1px solid #1e293b}
+.header{display:flex;justify-content:space-between;align-items:center;padding:12px 15px;background:#020617;border-bottom:1px solid #1e293b;position:sticky;top:0;z-index:20}
+.header b span{color:#facc15}
+.pill{font-size:10px;padding:5px 10px;border-radius:12px;font-weight:bold;background:#16a34a}
+.tabs{padding:10px 15px;display:flex;gap:8px;background:#0f172a;position:sticky;top:48px;z-index:10}
+.btn{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:bold;border:none;cursor:pointer}
+.btn-hoy{background:#dc2626;color:white}.btn-tabla{background:#16a34a;color:white}
+.titulo{font-size:11px;font-weight:bold;margin:18px 15px 8px;color:#facc15}.titulo.hoy{color:#ef4444}
+.card{background:#1e293b;border:1px solid #334155;border-radius:12px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;margin:0 15px 8px 15px;cursor:pointer}
+.card img{width:26px;height:26px;background:white;border-radius:50%;padding:2px;object-fit:contain}
+.mid{padding:4px 10px;border-radius:12px;font-size:12px;font-weight:bold;min-width:60px;text-align:center;background:#0f172a;border:1px solid #334155}
+.mid.live{background:#dc2626;border-color:#dc2626}
+.eq{font-size:11px;display:flex;align-items:center;gap:6px;width:105px;font-weight:600}.eq.r{justify-content:flex-end;text-align:right}
+#ficha{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:9999;overflow:auto}
+#vista-tabla{display:none;padding:10px}
+</style>
+</head>
+<body>
+<div class="cont">
+<div class="header"><div><b>76<span>SCORES</span></b> <small style="color:#94a3b8;font-size:10px;margin-left:6px">FECHA 28 - 2 SEPT 2026</small></div><div class="pill">16 EQUIPOS</div></div>
+<div class="tabs"><button class="btn btn-hoy" onclick="switchTab('partidos')">HOY 2 SEPT 2026</button><button class="btn btn-tabla" onclick="switchTab('tabla')">TABLA</button></div>
+<div id="vista-partidos">
+<div class="titulo">AYER - 1 SEPT</div><div id="ayer"></div>
+<div class="titulo hoy">HOY - 2 SEPTIEMBRE</div><div id="hoy">Cargando...</div>
+<div class="titulo">MAÑANA - 3 SEPTIEMBRE</div><div id="manana"></div>
+</div>
+<div id="vista-tabla"><div id="tabla-data"></div></div>
+<div id="ficha"></div>
+</div>
 <script>
-  async function abrirFicha(nombreEquipo) {
-    const t = TEAMS_INFO[nombreEquipo];
-    const ficha = document.getElementById('ficha');
-    // Pantalla de carga tipo 365
-    ficha.innerHTML = `<div style="background:#1e293b;min-height:100vh;padding:0;max-width:420px;margin:0 auto">
-      <div style="padding:20px;text-align:center"><div style="width:30px;height:30px;border:3px solid #facc15;border-top-color:transparent;border-radius:50%;margin:40px auto;animation:spin 1s linear infinite"></div><p style="font-size:12px">Cargando datos de ${nombreEquipo} desde 365Scores...</p></div></div><style>@keyframes spin{to{transform:rotate(360deg)}}</style>`;
-    ficha.style.display = 'block';
-  
-    // Busca ID real de 365 para ese equipo
-    let teamId = null;
-    const game = (ALL_GAMES||[]).find(g=> g.homeCompetitor?.name.toLowerCase().includes(nombreEquipo.toLowerCase()) || g.awayCompetitor?.name.toLowerCase().includes(nombreEquipo.toLowerCase()));
-    if(game){
-      if(game.homeCompetitor?.name.toLowerCase().includes(nombreEquipo.toLowerCase())) teamId = game.homeCompetitor.id;
-      else teamId = game.awayCompetitor.id;
-    }
-  
-    let plantelHTML = '';
-    try{
-      if(teamId){
-        const r = await fetch(`${WORKER}?teamId=${teamId}`);
-        const data = await r.json();
-        const squad = data.team?.squad || data.squad || [];
-        plantelHTML = squad.map(p=>{
-          const at = p.athlete || p;
-          return `<div style="display:flex;align-items:center;gap:10px;padding:10px;border-bottom:1px solid #0f172a">
-            <img src="https://imagecache.365scores.com/image/upload/f_png,w_80,h_80,c_thumb,g_face,q_90,d_Athletes:default.png/v1/athletes/${at.id}.png" style="width:42px;height:42px;border-radius:50%;background:white" onerror="this.src='https://via.placeholder.com/42'">
-            <div style="flex:1"><b style="font-size:13px">${at.name||at.shortName}</b><br><small style="opacity:.7">${at.position||p.position||''} - ${at.age?at.age+' años':''}</small></div>
-            <span style="font-size:11px;background:#0f172a;padding:4px 8px;border-radius:8px">${at.shirtNumber||''}</span>
-          </div>`;
-        }).join('');
-      }
-    }catch(e){}
-  
-    if(!plantelHTML) plantelHTML = (t?.jugadores||[]).map(j=>`<div style="padding:10px;border-bottom:1px solid #0f172a">${j}</div>`).join('');
-  
-    ficha.innerHTML = `
-    <div style="background:#0f172a;min-height:100vh;max-width:420px;margin:0 auto;border-left:1px solid #1e293b;border-right:1px solid #1e293b">
-      <div style="background:#020617;padding:12px;display:flex;align-items:center;gap:10px;position:sticky;top:0"><button onclick="cerrarFicha()" style="background:#1e293b;border:none;color:white;padding:8px 12px;border-radius:10px">← Volver</button><b>${t?.nombre||nombreEquipo}</b></div>
-      <div style="padding:20px;text-align:center;border-bottom:1px solid #1e293b">
-        <img src="https://imagecache.365scores.com/image/upload/f_png,w_120,h_120,c_limit,q_90,d_Competitors:default1.png/v1/Competitors/${teamId||12397}.png" style="width:80px;height:80px;background:white;border-radius:50%;padding:8px">
-        <h2 style="margin:10px 0 4px;color:${t?.color||'#facc15'}">${t?.nombre||nombreEquipo}</h2>
-        <small style="opacity:.7">${t?.ciudad||''} - ${t?.estadio||''}</small>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:16px;text-align:left">
-          <div style="background:#1e293b;padding:10px;border-radius:12px"><small style="opacity:.6">ESTADIO</small><br><b style="font-size:11px">${t?.estadio||'Monumental'}</b><br><small>${t?.aforo||''}</small></div>
-          <div style="background:#1e293b;padding:10px;border-radius:12px"><small style="opacity:.6">DT</small><br><b style="font-size:11px">${t?.dt||'Por confirmar'}</b></div>
-          <div style="background:#1e293b;padding:10px;border-radius:12px"><small style="opacity:.6">TÍTULOS</small><br><b style="font-size:14px;color:#facc15">${t?.titulos||'0'}</b></div>
-        </div>
-      </div>
-      <div style="padding:0">
-        <div style="padding:14px 16px;display:flex;gap:8px"><span style="background:#facc15;color:black;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:800">PLANTEL</span><span style="background:#1e293b;padding:5px 12px;border-radius:20px;font-size:11px">ESTADÍSTICAS</span></div>
-        ${plantelHTML}
-      </div>
-    </div>`;
-  }
-  
-  async function abrirPartido(id){
-    // ... (usa la función anterior que ya tienes, esa ya trae alineaciones con fotos)
-    const r = await fetch(WORKER+`?gameId=${id}`); 
-    const d = await r.json(); 
-    const g = d.game;
-    // Si falla, muestra fallback
-    if(!g) { alert('Cargando en vivo...'); return; }
-    // tu código anterior de abrirPartido con fotos HD sigue igual
-    document.getElementById('ficha').innerHTML = `<div style="background:#1e293b;padding:20px;border-radius:16px;max-width:400px;margin:auto"><h2>${g.homeCompetitor.name} ${g.homeCompetitor.score} - ${g.awayCompetitor.score} ${g.awayCompetitor.name}</h2><p>${g.statusText}</p><button onclick="cerrarFicha()" style="width:100%;padding:12px;background:#dc2626;border:none;border-radius:12px;color:white">Cerrar</button></div>`;
-    document.getElementById('ficha').style.display='block';
-  }
-  </script>
+const WORKER="https://square-boat-6ff2.itsjunioryg.workers.dev";
+let ALL_GAMES=[];
+const TEAMS_INFO={'Barcelona':{nombre:'Barcelona SC',estadio:'Monumental Banco Pichincha',aforo:'59,283',ciudad:'Guayaquil',fundado:'1 Mayo 1925',dt:'Ismael Rescalvo',titulos:'16',jugadores:['José Contreras - ARQ','Octavio Rivero - DEL (4 goles)','Janner Corozo - EXT'],color:'#FFD700'},'Emelec':{nombre:'Emelec',estadio:'George Capwell',aforo:'40,000',ciudad:'Guayaquil',fundado:'1929',dt:'Jorge Célico',titulos:'14',jugadores:['Pedro Ortiz - ARQ'],color:'#0047AB'},'Liga de Quito':{nombre:'LDU Quito',estadio:'Rodrigo Paz Delgado',aforo:'41,575',ciudad:'Quito',fundado:'1930',dt:'Tiago Nunes',titulos:'12',jugadores:['Alexander Domínguez'],color:'#FFFFFF'},'Aucas':{nombre:'Aucas',estadio:'Gonzalo Pozo',aforo:'18,000',ciudad:'Quito',fundado:'1945',dt:'Gabriel Pereyra',titulos:'1',jugadores:[],color:'#FFD700'},'Independiente del Valle':{nombre:'IDV',estadio:'Banco Guayaquil',aforo:'12,000',ciudad:'Sangolquí',fundado:'1958',dt:'Javier Rabanal',titulos:'1',jugadores:[],color:'#000000'},'Macará':{nombre:'Macará',estadio:'Bellavista',aforo:'16,000',ciudad:'Ambato',fundado:'1939',dt:'Vélez',titulos:'0',jugadores:[],color:'#87CEEB'},'Manta':{nombre:'Manta FC',estadio:'Jocay',aforo:'18,000',ciudad:'Manta',fundado:'1998',dt:'Por confirmar',titulos:'0',jugadores:[],color:'#00BFFF'},'Deportivo Cuenca':{nombre:'Dep. Cuenca',estadio:'Alejandro Serrano',aforo:'16,540',ciudad:'Cuenca',fundado:'1971',dt:'Norberto Araujo',titulos:'1',jugadores:[],color:'#FF0000'},'Guayaquil City':{nombre:'Guayaquil City',estadio:'Chucho Benítez',aforo:'10,152',ciudad:'Guayaquil',fundado:'2007',dt:'Pool Gavilánez',titulos:'0',jugadores:[],color:'#87CEEB'},'Universidad Católica':{nombre:'U. Católica',estadio:'Olímpico Atahualpa',aforo:'35,742',ciudad:'Quito',fundado:'1963',dt:'Diego Martínez',titulos:'0',jugadores:[],color:'#87CEEB'},'Delfín':{nombre:'Delfín SC',estadio:'Jocay',aforo:'18,000',ciudad:'Manta',fundado:'1989',dt:'J. C. León',titulos:'1',jugadores:[],color:'#FFD700'},'Técnico Universitario':{nombre:'Técnico U.',estadio:'Bellavista',aforo:'16,000',ciudad:'Ambato',fundado:'1971',dt:'Juan Urquiza',titulos:'0',jugadores:[],color:'#FF0000'},'Mushuc Runa':{nombre:'Mushuc Runa',estadio:'COOP',aforo:'8,200',ciudad:'Ambato',fundado:'2003',dt:'E. Almeida',titulos:'0',jugadores:[],color:'#008000'},'Orense':{nombre:'Orense SC',estadio:'9 de Mayo',aforo:'16,000',ciudad:'Machala',fundado:'2009',dt:'S. Escobar',titulos:'0',jugadores:[],color:'#008000'},'Libertad':{nombre:'Libertad FC',estadio:'Reina del Cisne',aforo:'14,000',ciudad:'Loja',fundado:'2017',dt:'P. C. Torres',titulos:'0',jugadores:[],color:'#FFA500'},'Leones':{nombre:'Leones del Norte',estadio:'Olímpico de Ibarra',aforo:'18,000',ciudad:'Ibarra',fundado:'2017',dt:'Por confirmar',titulos:'0',jugadores:[],color:'#FFD700'}};
+function findKey(n){if(!n)return'Barcelona';n=n.toLowerCase();for(let k of Object.keys(TEAMS_INFO)){if(n.includes(k.toLowerCase().split(' ')[0]))return k;}return'Barcelona';}
+async function cargar(){try{const r=await fetch(WORKER);const d=await r.json();ALL_GAMES=d.games||[];let a='',h='',m='';ALL_GAMES.forEach(g=>{const nL=g.homeCompetitor?.name||'Local',nV=g.awayCompetitor?.name||'Visita',sL=g.homeCompetitor?.score,sV=g.awayCompetitor?.score,isLive=g.isLive||(g.statusText&&g.statusText.includes("'")),kL=findKey(nL),kV=findKey(nV),mid=sL!=null?`<div class="mid ${isLive?'live':''}" onclick="abrirPartido(${g.id})"><div>${sL} - ${sV}</div><small style="font-size:9px">${g.statusText||'Final'}</small></div>`:`<div class="mid" onclick="abrirPartido(${g.id})"><div>${g.statusText||'14:00'}</div></div>`,card=`<div class="card"><div class="eq" onclick="abrirFicha('${kL}')"><img src="${g.homeCompetitor?.imageUrl||''}"> ${nL}</div>${mid}<div class="eq r" onclick="abrirFicha('${kV}')">${nV} <img src="${g.awayCompetitor?.imageUrl||''}"></div></div>`;if(g.id<=102)a+=card;else if(g.id<=105)h+=card;else m+=card;});document.getElementById('ayer').innerHTML=a;document.getElementById('hoy').innerHTML=h;document.getElementById('manana').innerHTML=m;}catch(e){document.getElementById('hoy').innerHTML='Error Worker: '+e;}}
+function switchTab(t){document.getElementById('vista-partidos').style.display=t==='partidos'?'block':'none';document.getElementById('vista-tabla').style.display=t==='tabla'?'block':'none';if(t==='tabla'){const tb=[{pos:1,equipo:'IDV',pj:27,pts:68},{pos:2,equipo:'Aucas',pj:27,pts:47},{pos:3,equipo:'Macará',pj:27,pts:45},{pos:6,equipo:'Barcelona',pj:27,pts:39},{pos:11,equipo:'Emelec',pj:27,pts:35}];document.getElementById('tabla-data').innerHTML=`<h3>Tabla LigaPro 2026</h3><table><tr><th>#</th><th>Equipo</th><th>Pts</th></tr>${tb.map(r=>`<tr><td>${r.pos}</td><td>${r.equipo}</td><td style="color:#facc15">${r.pts}</td></tr>`).join('')}</table><button onclick="switchTab('partidos')" class="btn btn-hoy" style="margin-top:12px">Volver</button>`;}}
+function abrirFicha(n){const t=TEAMS_INFO[n]||TEAMS_INFO['Barcelona'];document.getElementById('ficha').innerHTML=`<div style="background:#0f172a;min-height:100vh;max-width:420px;margin:0 auto"><div style="background:#020617;padding:12px"><button onclick="cerrarFicha()" style="background:#1e293b;border:none;color:white;padding:8px 12px;border-radius:10px">← Volver</button> ${t.nombre}</div><div style="padding:20px;text-align:center"><h2 style="color:${t.color}">${t.nombre}</h2><p style="font-size:12px">Estadio: ${t.estadio}<br>Ciudad: ${t.ciudad}<br>DT: ${t.dt} | Títulos: ${t.titulos}</p></div><div style="padding:0 16px">${t.jugadores.map(j=>`<div style="padding:10px;border-bottom:1px solid #1e293b">${j}</div>`).join('')}</div></div>`;document.getElementById('ficha').style.display='block';}
+async function abrirPartido(id){const f=document.getElementById('ficha');f.innerHTML=`<div style="padding:40px;text-align:center">Cargando alineaciones 365Scores...</div>`;f.style.display='block';try{const r=await fetch(WORKER+`?gameId=${id}`);const d=await r.json();const g=d.game;f.innerHTML=`<div style="background:#1e293b;max-width:420px;margin:0 auto;min-height:100vh"><div style="padding:12px;background:#020617"><button onclick="cerrarFicha()" style="background:#1e293b;border:none;color:white;padding:8px 12px;border-radius:10px">← Volver</button> ${g.homeCompetitor.name} ${g.homeCompetitor.score} - ${g.awayCompetitor.score} ${g.awayCompetitor.name}</div><div style="padding:16px">${(g.homeCompetitor.lineups?.members||[]).map(m=>`<div style="display:flex;gap:8px;padding:6px 0"><img src="https://imagecache.365scores.com/image/upload/f_png,w_40,h_40,c_thumb,g_face,q_90,d_Athletes:default.png/v1/athletes/${m.athlete.id}.png" style="width:30px;height:30px;border-radius:50%;background:white"><span>${m.athlete.name}</span></div>`).join('')||'Alineación por confirmar'}</div></div>`;}catch(e){f.innerHTML=`<div style="padding:20px"><h3>Partido ${id}</h3><button onclick="cerrarFicha()" class="btn btn-hoy">Cerrar</button></div>`;}}
+function cerrarFicha(){document.getElementById('ficha').style.display='none';}
+cargar();
+</script>
+</body>
+</html>
