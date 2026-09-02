@@ -2,148 +2,123 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>76SCORES</title>
+<title>76SCORES - 16 EQUIPOS</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<style>.no-scrollbar::-webkit-scrollbar{display:none}.no-scrollbar{-ms-overflow-style:none;scrollbar-width:none}</style>
 </head>
 <body class="bg-[#0a0e14] text-white flex justify-center">
 <div class="w-full max-w-[430px] bg-[#12171f] min-h-screen flex flex-col pb-[80px]">
-
-<header class="p-3 bg-[#1a212e] sticky top-0 z-30">
-  <h1 class="font-black text-[18px]">76<span class="text-[#ff3b3b]">SCORES</span></h1>
-  <div class="flex gap-1.5 mt-3 overflow-x-auto no-scrollbar">
-    <button onclick="setSport('soccer')" id="s-soccer" class="whitespace-nowrap px-3 py-1.5 rounded-full text-[10px] font-black bg-[#ff3b3b]">⚽ FÚTBOL</button>
-    <button onclick="setSport('basket')" id="s-basket" class="whitespace-nowrap px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400">🏀 BASKET</button>
-    <button onclick="setSport('mlb')" id="s-mlb" class="whitespace-nowrap px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400">⚾ BÉISBOL</button>
-    <button onclick="setSport('tenis')" id="s-tenis" class="whitespace-nowrap px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400">🎾 TENIS</button>
-  </div>
+<header class="p-3 bg-[#1a212e] sticky top-0 z-30 flex justify-between items-center">
+  <h1 class="font-black text-[18px]">76<span class="text-[#ff3b3b]">SCORES</span> <span class="text-[9px] text-gray-400 font-normal ml-2">FASE INICIAL - FECHA 28</span></h1>
+  <span class="text-[7px] bg-green-600 px-2 py-1 rounded-full font-black">16 EQUIPOS OK</span>
 </header>
-
-<div class="bg-[#1a212e] px-3 py-2.5 flex justify-between items-center sticky top-[86px] z-20">
-  <div class="flex items-center gap-2">
-    <button id="btn-back" onclick="backToLigas()" class="hidden w-6 h-6 bg-[#facc15] text-black rounded-full text-[10px] flex items-center justify-center"><i class="fa-solid fa-arrow-left"></i></button>
-    <span class="text-[11px] font-black tracking-widest" id="main-title">LIGAS</span>
-  </div>
-  <span id="today-date" class="text-[9px] text-gray-400"></span>
+<div class="bg-[#1a212e] px-3 py-2.5 flex gap-2 sticky top-[56px] z-20">
+  <span class="text-[10px] bg-[#ff3b3b] px-2.5 py-1 rounded-full font-black">HOY 2 SEPT 2026</span>
+  <button onclick="toggleTabla()" class="text-[9px] bg-green-600 px-2.5 py-1 rounded-full font-black"><i class="fa-solid fa-table"></i> TABLA</button>
 </div>
-
 <main class="p-3 flex-1">
-  <div id="ligas-view">
-    <!-- VISTA 1: LISTA DE PAISES -->
-    <div id="paises-container">
-      <div id="ligas-list"></div>
-    </div>
-    <!-- VISTA 2: HORARIOS DE LA LIGA (NUEVA PANTALLA) -->
-    <div id="partidos-container" class="hidden">
-      <div id="liga-selected-header" class="bg-[#facc15] text-black p-2.5 rounded-lg text-[11px] font-black flex justify-between items-center mb-3">
-        <span id="liga-selected-name"></span><span id="liga-selected-count" class="bg-black text-[#facc15] px-2 py-0.5 rounded-full text-[9px]"></span>
+  <div id="partidos-view"><div id="list" class="space-y-6"></div></div>
+  <div id="tabla-view" class="hidden">
+    <div class="bg-[#1e2735] p-3 rounded-xl">
+      <div class="flex justify-between items-center mb-3">
+        <span class="text-[11px] font-black">TABLA LIGAPRO 2026 - 16 EQUIPOS</span>
+        <button onclick="toggleTabla()" class="text-[10px] bg-[#0f141e] px-2 py-1 rounded-full">X</button>
       </div>
-      <input id="q" oninput="filter()" placeholder="🔍 Buscar equipo en esta liga..." class="w-full bg-[#1e2735] text-[12px] rounded-full px-4 py-2.5 mb-3 outline-none"/>
-      <div id="list" class="space-y-2"></div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-[10px]"><thead class="text-gray-400 text-[9px]"><tr><th class="text-left py-1">#</th><th class="text-left">EQUIPO</th><th>PTS</th><th>PJ</th></tr></thead><tbody id="tabla-body" class="font-bold"></tbody></table>
+      </div>
     </div>
   </div>
-
-  <div id="fav-view" class="hidden text-[11px] text-gray-400 text-center py-10">Tus favoritos ⭐</div>
-  <div id="noticias-view" class="hidden text-[11px] text-gray-400 text-center py-10">Noticias pronto 📰</div>
-  <div id="config-view" class="hidden p-3 bg-[#1e2735] rounded-xl text-[11px]">Configuración<br>Zona horaria automática activa<br><br>76SCORES v1.0</div>
+  <div id="noticias-view" class="hidden"><div class="bg-[#1e2735] p-3 rounded-xl text-[11px]">Noticias</div></div>
+  <div id="config-view" class="hidden p-3 bg-[#1e2735] rounded-xl text-[11px]">76SCORES v3 - 16 equipos</div>
 </main>
-
 <div class="fixed bottom-0 w-full max-w-[430px] bg-[#1a212e] border-t border-gray-800 flex justify-around py-2.5 z-40">
-  <button onclick="setBottom('fav')" id="bb-fav" class="flex flex-col items-center text-gray-500"><i class="fa-regular fa-star text-[18px]"></i><span class="text-[8px] mt-1 font-bold">FAVORITOS</span></button>
-  <button onclick="setBottom('ligas')" id="bb-ligas" class="flex flex-col items-center text-[#facc15]"><i class="fa-solid fa-trophy text-[18px]"></i><span class="text-[8px] mt-1 font-bold">LIGAS</span></button>
+  <button onclick="setBottom('partidos')" id="bb-partidos" class="flex flex-col items-center text-[#facc15]"><i class="fa-solid fa-futbol text-[18px]"></i><span class="text-[8px] mt-1 font-bold">PARTIDOS</span></button>
   <button onclick="setBottom('noticias')" id="bb-noticias" class="flex flex-col items-center text-gray-500"><i class="fa-regular fa-newspaper text-[18px]"></i><span class="text-[8px] mt-1 font-bold">NOTICIAS</span></button>
   <button onclick="setBottom('config')" id="bb-config" class="flex flex-col items-center text-gray-500"><i class="fa-solid fa-gear text-[18px]"></i><span class="text-[8px] mt-1 font-bold">CONFIG</span></button>
 </div>
-
 </div>
-
 <script>
-let all=[], currentLiga='ecu.1';
-let userTZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
-document.getElementById('today-date').innerText = new Date().toLocaleDateString('es-EC',{weekday:'short', day:'2-digit', month:'short', timeZone:userTZ});
-
-const PAISES = [
-  {pais:'Ecuador', flag:'🇪🇨', ligas:[{id:'ecu.1', nombre:'LigaPro Serie A'},{id:'ecu.2', nombre:'LigaPro Serie B'}]},
-  {pais:'Inglaterra', flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', ligas:[{id:'eng.1', nombre:'Premier League'},{id:'eng.2', nombre:'Championship'}]},
-  {pais:'España', flag:'🇪🇸', ligas:[{id:'esp.1', nombre:'LaLiga'},{id:'esp.2', nombre:'LaLiga 2'}]},
-  {pais:'Italia', flag:'🇮🇹', ligas:[{id:'ita.1', nombre:'Serie A'},{id:'ita.2', nombre:'Serie B'}]},
-  {pais:'Alemania', flag:'🇩🇪', ligas:[{id:'ger.1', nombre:'Bundesliga'}]},
-  {pais:'Francia', flag:'🇫🇷', ligas:[{id:'fra.1', nombre:'Ligue 1'}]},
-  {pais:'Argentina', flag:'🇦🇷', ligas:[{id:'arg.1', nombre:'Liga Profesional'}]},
-  {pais:'Brasil', flag:'🇧🇷', ligas:[{id:'bra.1', nombre:'Brasileirão A'}]},
-  {pais:'México', flag:'🇲🇽', ligas:[{id:'mex.1', nombre:'Liga MX'}]},
-  {pais:'EEUU', flag:'🇺🇸', ligas:[{id:'usa.1', nombre:'MLS'}]},
-  {pais:'Internacional', flag:'🏆', ligas:[{id:'uefa.champions', nombre:'Champions League'},{id:'conmebol.libertadores', nombre:'Copa Libertadores'}]},
-];
-
+const LOGOS = {
+  'Macará':'https://a.espncdn.com/i/teamlogos/soccer/500/12261.png',
+  'Manta':'./manta_512.png',
+  'Deportivo Cuenca':'https://a.espncdn.com/i/teamlogos/soccer/500/12251.png',
+  'Guayaquil City':'./guayaquil_city_512.png',
+  'Barcelona':'https://a.espncdn.com/i/teamlogos/soccer/500/12249.png',
+  'Independiente del Valle':'https://a.espncdn.com/i/teamlogos/soccer/500/12321.png',
+  'Universidad Católica':'https://a.espncdn.com/i/teamlogos/soccer/500/12259.png',
+  'Aucas':'https://a.espncdn.com/i/teamlogos/soccer/500/12248.png',
+  'Leones':'https://a.espncdn.com/i/teamlogos/soccer/500/23995.png',
+  'Orense':'./orense_512.png',
+  'Libertad':'./libertad_512.png',
+  'Emelec':'https://a.espncdn.com/i/teamlogos/soccer/500/12252.png',
+  'Delfín':'https://a.espncdn.com/i/teamlogos/soccer/500/12254.png',
+  'Técnico Universitario':'./tecnico_u_512.png',
+  'Liga de Quito':'https://a.espncdn.com/i/teamlogos/soccer/500/12260.png',
+  'Mushuc Runa':'./mushuc_runa_512.png',
+};
 function setBottom(b){
- document.querySelectorAll('[id^=bb-]').forEach(el=>{el.classList.remove('text-[#facc15]'); el.classList.add('text-gray-500');});
- document.getElementById('bb-'+b).classList.remove('text-gray-500'); document.getElementById('bb-'+b).classList.add('text-[#facc15]');
- document.getElementById('ligas-view').classList.toggle('hidden', b!=='ligas');
- document.getElementById('fav-view').classList.toggle('hidden', b!=='fav');
- document.getElementById('noticias-view').classList.toggle('hidden', b!=='noticias');
- document.getElementById('config-view').classList.toggle('hidden', b!=='config');
- if(b==='ligas'){ backToLigas(); } else { document.getElementById('main-title').innerText = b.toUpperCase(); }
+ document.querySelectorAll('[id^=bb-]').forEach(el=>{el.classList.remove('text-[#facc15]');el.classList.add('text-gray-500');});
+ document.getElementById('bb-'+b).classList.add('text-[#facc15]');
+ document.getElementById('partidos-view').classList.toggle('hidden',b!=='partidos');
+ document.getElementById('tabla-view').classList.add('hidden');
+ document.getElementById('noticias-view').classList.toggle('hidden',b!=='noticias');
+ document.getElementById('config-view').classList.toggle('hidden',b!=='config');
 }
-
-function setSport(s){ document.querySelectorAll('[id^=s-]').forEach(b=>b.className='whitespace-nowrap px-3 py-1.5 rounded-full text-[10px] font-black bg-[#1e2735] text-gray-400'); document.getElementById('s-'+s).className='whitespace-nowrap px-3 py-1.5 rounded-full text-[10px] font-black bg-[#ff3b3b]'; }
-
-async function fetchESPN(url){ try{let r=await fetch(url); return await r.json();}catch(e){let proxy=`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`; let r2=await fetch(proxy); let j2=await r2.json(); return JSON.parse(j2.contents);} }
-function fmtLocal(iso){ if(!iso) return ''; let d=new Date(iso); return d.toLocaleString('es-EC',{hour:'2-digit', minute:'2-digit', day:'2-digit', month:'short', timeZone:userTZ}); }
-
-function loadLigas(){
- document.getElementById('ligas-list').innerHTML = PAISES.map((paisObj,i)=>`
-  <div class="mb-1.5">
-    <button onclick="togglePais(${i})" class="w-full flex items-center gap-2 bg-[#1e2735] p-3 rounded-xl">
-      <span class="text-[18px]">${paisObj.flag}</span>
-      <span class="flex-1 text-left text-[11px] font-bold">${paisObj.pais.toUpperCase()}</span>
-      <i id="icon-${i}" class="fa-solid fa-chevron-down text-[10px] text-gray-500"></i>
-    </button>
-    <div id="pais-${i}" class="hidden mt-1 ml-2 space-y-1">
-      ${paisObj.ligas.map(l=>`<button onclick="selectLiga('${l.id}','${l.nombre}')" class="w-full text-left bg-[#12171f] border border-gray-800 p-2.5 rounded-lg text-[11px] flex justify-between"><span>${l.nombre}</span><span>›</span></button>`).join('')}
-    </div>
-  </div>
- `).join('');
+function toggleTabla(){
+ document.getElementById('partidos-view').classList.toggle('hidden');
+ document.getElementById('tabla-view').classList.toggle('hidden');
+ renderTabla();
 }
-function togglePais(i){ document.getElementById(`pais-${i}`).classList.toggle('hidden'); document.getElementById(`icon-${i}`).classList.toggle('fa-chevron-down'); document.getElementById(`icon-${i}`).classList.toggle('fa-chevron-up'); }
-
-function backToLigas(){
- document.getElementById('paises-container').classList.remove('hidden');
- document.getElementById('partidos-container').classList.add('hidden');
- document.getElementById('btn-back').classList.add('hidden');
- document.getElementById('main-title').innerText = 'LIGAS';
+const partidosReales = [
+  {dia:'AYER - 1 SEPT', h:'Delfín', a:'Técnico Universitario', hora:'1-0', estado:'FT'},
+  {dia:'AYER - 1 SEPT', h:'Liga de Quito', a:'Mushuc Runa', hora:'0-0', estado:'FT'},
+  {dia:'HOY - 2 SEPTIEMBRE', h:'Macará', a:'Manta', hora:'14:00', estado:'HOY'},
+  {dia:'HOY - 2 SEPTIEMBRE', h:'Deportivo Cuenca', a:'Guayaquil City', hora:'16:30', estado:'HOY'},
+  {dia:'HOY - 2 SEPTIEMBRE', h:'Barcelona', a:'Independiente del Valle', hora:'19:00', estado:'HOY'},
+  {dia:'MAÑANA - 3 SEPTIEMBRE', h:'Universidad Católica', a:'Aucas', hora:'14:00', estado:''},
+  {dia:'MAÑANA - 3 SEPTIEMBRE', h:'Leones', a:'Orense', hora:'16:30', estado:''},
+  {dia:'MAÑANA - 3 SEPTIEMBRE', h:'Libertad', a:'Emelec', hora:'19:00', estado:''},
+];
+let html='', lastDia='';
+partidosReales.forEach(m=>{
+  if(m.dia!==lastDia){
+    if(lastDia!=='') html+=`</div></div>`;
+    html+=`<div><div class="mb-2 text-[11px] font-black ${m.dia.includes('HOY')?'text-[#ff3b3b]':'text-[#facc15]'}">${m.dia}</div><div class="space-y-2">`;
+    lastDia=m.dia;
+  }
+  html+=`<div class="bg-[#1e2735] p-3 rounded-xl border ${m.estado.includes('HOY')?'border-red-500/30':''} flex items-center justify-between">
+    <div class="flex items-center gap-2 flex-1"><img src="${LOGOS[m.h]}" class="w-7 h-7 bg-white rounded-full p-1 object-contain"/><span class="text-[11px] font-bold truncate">${m.h}</span></div>
+    <div class="mx-2 ${m.estado==='FT'?'bg-gray-600':m.estado.includes('HOY')?'bg-red-600':'bg-[#0f141e]'} px-3 py-1 rounded-full text-[10px] font-black min-w-[55px] text-center">${m.hora}</div>
+    <div class="flex items-center gap-2 flex-1 justify-end"><span class="text-[11px] font-bold truncate text-right">${m.a}</span><img src="${LOGOS[m.a]}" class="w-7 h-7 bg-white rounded-full p-1 object-contain"/></div>
+  </div>`;
+});
+document.getElementById('list').innerHTML=html;
+function renderTabla(){
+  const tabla=[
+    {n:1,e:'Independiente del Valle',pts:68,pj:27},
+    {n:2,e:'Aucas',pts:47,pj:27},
+    {n:3,e:'Macará',pts:45,pj:27},
+    {n:4,e:'Universidad Católica',pts:44,pj:27},
+    {n:5,e:'Liga de Quito',pts:42,pj:28},
+    {n:6,e:'Barcelona',pts:39,pj:27},
+    {n:7,e:'Mushuc Runa',pts:37,pj:28},
+    {n:8,e:'Libertad',pts:37,pj:27},
+    {n:9,e:'Guayaquil City',pts:36,pj:27},
+    {n:10,e:'Leones',pts:35,pj:27},
+    {n:11,e:'Emelec',pts:35,pj:27},
+    {n:12,e:'Deportivo Cuenca',pts:33,pj:27},
+    {n:13,e:'Orense',pts:32,pj:27},
+    {n:14,e:'Delfín',pts:30,pj:27},
+    {n:15,e:'Técnico Universitario',pts:28,pj:27},
+    {n:16,e:'Manta',pts:20,pj:27},
+  ];
+  let thtml='';
+  tabla.forEach(t=>{
+    thtml+=`<tr class="border-t border-gray-700/30"><td class="py-2">${t.n}</td><td class="flex items-center gap-2 py-1"><img src="${LOGOS[t.e]||''}" class="w-5 h-5 bg-white rounded-full p-0.5 object-contain">${t.e}</td><td class="text-center">${t.pts}</td><td class="text-center">${t.pj}</td></tr>`;
+  });
+  document.getElementById('tabla-body').innerHTML=thtml;
 }
-
-async function selectLiga(id,nombre){
- currentLiga=id;
- // CAMBIO DE PANTALLA PERO LIGAS SIGUE ILUMINADO
- document.getElementById('paises-container').classList.add('hidden');
- document.getElementById('partidos-container').classList.remove('hidden');
- document.getElementById('btn-back').classList.remove('hidden');
- document.getElementById('main-title').innerText = nombre.toUpperCase();
- document.getElementById('liga-selected-name').innerText = nombre.toUpperCase();
- document.getElementById('q').value='';
- load(id);
-}
-
-async function load(ligaId){
- const list=document.getElementById('list');
- list.innerHTML='<div class="py-8 text-center text-gray-400 text-[11px]"><i class="fa-solid fa-spinner fa-spin"></i> Cargando horarios...</div>';
- let data=await fetchESPN(`https://site.api.espn.com/apis/site/v2/sports/soccer/${ligaId}/scoreboard`);
- let events=data.events||[];
- all=events.map(ev=>{ const comp=ev.competitions[0]; const h=comp.competitors.find(c=>c.homeAway==='home')||comp.competitors[0]; const a=comp.competitors.find(c=>c.homeAway==='away')||comp.competitors[1]; return {date:comp.date, h:h.team.displayName, a:a.team.displayName, hs:h.score, as:a.score, live:comp.status.type.state==='in', detail:comp.status.type.shortDetail, logoH:h.team.logo, logoA:a.team.logo, search:`${h.team.displayName} ${a.team.displayName}`.toLowerCase()}; });
- document.getElementById('liga-selected-count').innerText = `${all.length} PARTIDOS`;
- render(all);
-}
-function render(arr){
- const c=document.getElementById('list');
- if(!arr.length){c.innerHTML='<div class="p-4 text-center text-[11px] text-gray-500">No hay partidos programados</div>';return;}
- c.innerHTML=arr.map(i=>`<div class="bg-[#1e2735] p-3 rounded-xl border ${i.live?'border-green-500/40':'border-gray-700/20'}"><div class="flex items-center justify-between"><div class="flex items-center gap-2 flex-1"><img src="${i.logoH}" class="w-7 h-7 bg-white rounded-full p-0.5"/><span class="text-[11px] font-bold truncate">${i.h}</span><b class="ml-auto text-[12px]">${i.hs??''}</b></div><div class="mx-2 text-[8px] px-2 py-1 rounded-full ${i.live?'bg-red-500 animate-pulse text-white':'bg-[#0f141e] text-gray-400'}">${i.live?'LIVE':(i.detail||'VS')}</div><div class="flex items-center gap-2 flex-1 justify-end"><b class="text-[12px]">${i.as??''}</b><span class="text-[11px] font-bold truncate">${i.a}</span><img src="${i.logoA}" class="w-7 h-7 bg-white rounded-full p-0.5"/></div></div><div class="text-[9px] text-[#facc15] mt-1.5 text-center font-bold">⏰ ${i.date?fmtLocal(i.date):''} - HORA ECUADOR (${userTZ})</div></div>`).join('');
-}
-function filter(){ let q=document.getElementById('q').value.toLowerCase(); render(all.filter(x=>x.search.includes(q))); }
-
-loadLigas();
 </script>
 </body>
 </html>
