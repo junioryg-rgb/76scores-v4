@@ -1,121 +1,76 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>76SCORES - 16 EQUIPOS</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>76Scores - LigaPro</title>
+<style>
+body{background:#0f172a;color:white;font-family:Arial;margin:0}
+header{background:#020617;padding:15px;text-align:center;border-bottom:2px solid #facc15}
+.tabs{display:flex;gap:10px;padding:10px;justify-content:center}
+.tab{padding:8px 16px;background:#1e293b;border-radius:20px;cursor:pointer}
+.tab.active{background:#facc15;color:black}
+.match{background:#1e293b;margin:10px;padding:12px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+.match img{width:28px;height:28px}
+#ficha{position:fixed;top:0;left:0;width:100%;height:100%;background:#0f172a;z-index:99;display:none;overflow:auto;padding:20px}
+</style>
 </head>
-<body class="bg-[#0a0e14] text-white flex justify-center">
-<div class="w-full max-w-[430px] bg-[#12171f] min-h-screen flex flex-col pb-[80px] relative">
-<header class="p-3 bg-[#1a212e] sticky top-0 z-30 flex justify-between items-center">
-  <h1 class="font-black text-[18px]">76<span class="text-[#ff3b3b]">SCORES</span> <span class="text-[9px] text-gray-400 ml-2">FECHA 28</span></h1>
-  <span class="text-[7px] bg-green-600 px-2 py-1 rounded-full font-black">16 EQUIPOS OK</span>
-</header>
-<div class="bg-[#1a212e] px-3 py-2.5 flex gap-2 sticky top-[56px] z-20">
-  <span class="text-[10px] bg-[#ff3b3b] px-2.5 py-1 rounded-full font-black">HOY 2 SEPT 2026</span>
-  <button onclick="toggleTabla()" class="text-[9px] bg-green-600 px-2.5 py-1 rounded-full font-black">TABLA</button>
+<body>
+<header><h2>76Scores - 100% LigaPro</h2></header>
+<div class="tabs">
+<div class="tab active" onclick="filtrar('all',this)">TODOS</div>
+<div class="tab" onclick="filtrar('live',this)">EN VIVO</div>
+<div class="tab" onclick="filtrar('finished',this)">FINALIZADOS</div>
 </div>
-<main class="p-3 flex-1">
-  <div id="partidos-view"><div id="list" class="space-y-6"></div></div>
-  <div id="tabla-view" class="hidden"><div class="bg-[#1e2735] p-3 rounded-xl"><div class="flex justify-between items-center mb-3"><span class="text-[11px] font-black">TABLA LIGAPRO 2026</span><button onclick="toggleTabla()" class="text-[10px] bg-[#0f141e] px-2 py-1 rounded-full">X</button></div><table class="w-full text-[10px]"><thead class="text-gray-400 text-[9px]"><tr><th class="text-left py-1">#</th><th class="text-left">EQUIPO</th><th>PTS</th><th>PJ</th></tr></thead><tbody id="tabla-body"></tbody></table></div></div>
-  <div id="noticias-view" class="hidden"><div class="bg-[#1e2735] p-3 rounded-xl text-[11px]"><b>Noticias Fecha 28</b><br><br>• Barcelona vs IDV hoy 19:00 en el Monumental<br>• Emelec busca salir del fondo<br>• Aucas quiere asegurar Libertadores</div></div>
-  <div id="config-view" class="hidden p-3 bg-[#1e2735] rounded-xl text-[11px]">76SCORES v4<br>Guayaquil - Ecuador<br>16 Equipos - Fecha 28</div>
-</main>
+<div id="lista">Cargando LigaPro...</div>
+<div id="ficha"></div>
 
-<!-- BOTONES DE ABAJO - ESTOS ERAN LOS QUE FALTABAN -->
-<div class="fixed bottom-0 w-full max-w-[430px] bg-[#1a212e] border-t border-gray-800 flex justify-around py-2.5 z-40">
-  <button onclick="setBottom('partidos')" id="bb-partidos" class="flex flex-col items-center text-[#facc15]"><i class="fa-solid fa-futbol text-[18px]"></i><span class="text-[8px] mt-1 font-bold">PARTIDOS</span></button>
-  <button onclick="setBottom('noticias')" id="bb-noticias" class="flex flex-col items-center text-gray-500"><i class="fa-regular fa-newspaper text-[18px]"></i><span class="text-[8px] mt-1 font-bold">NOTICIAS</span></button>
-  <button onclick="setBottom('config')" id="bb-config" class="flex flex-col items-center text-gray-500"><i class="fa-solid fa-gear text-[18px]"></i><span class="text-[8px] mt-1 font-bold">CONFIG</span></button>
-</div>
-
-</div>
 <script>
-const LOGOS = {
-  'Macará':'Ligapro/macara.png',
-  'Manta':'Ligapro/manta.png',
-  'Deportivo Cuenca':'Ligapro/cuenca.png',
-  'Guayaquil City':'Ligapro/city.png',
-  'Barcelona':'Ligapro/barcelona.png',
-  'Independiente del Valle':'Ligapro/idv.png',
-  'Universidad Católica':'Ligapro/catolica.png',
-  'Aucas':'Ligapro/aucas.png',
-  'Leones':'Ligapro/leones.png',
-  'Orense':'Ligapro/orense.png',
-  'Libertad':'Ligapro/libertad.png',
-  'Emelec':'Ligapro/emelec.png',
-  'Delfín':'Ligapro/delfin.png',
-  'Técnico Universitario':'Ligapro/tecnico.png',
-  'Liga de Quito':'Ligapro/ldu.png',
-  'Mushuc Runa':'Ligapro/mushuc.png',
-};
-function setBottom(b){
- document.querySelectorAll('[id^=bb-]').forEach(el=>{el.classList.remove('text-[#facc15]');el.classList.add('text-gray-500');});
- document.getElementById('bb-'+b).classList.add('text-[#facc15]');
- document.getElementById('bb-'+b).classList.remove('text-gray-500');
- document.getElementById('partidos-view').classList.toggle('hidden',b!=='partidos');
- document.getElementById('tabla-view').classList.add('hidden');
- document.getElementById('noticias-view').classList.toggle('hidden',b!=='noticias');
- document.getElementById('config-view').classList.toggle('hidden',b!=='config');
- if(b==='partidos') document.getElementById('tabla-view').classList.add('hidden');
+const WORKER = "https://square-boat-6ff2.itsjunioryg.workers.dev";
+let TODOS = [];
+
+async function cargar(){
+  const res = await fetch(WORKER);
+  const data = await res.json();
+  TODOS = data.games || data;
+  pintar(TODOS);
 }
-function toggleTabla(){
- document.getElementById('partidos-view').classList.toggle('hidden');
- document.getElementById('tabla-view').classList.toggle('hidden');
- document.getElementById('noticias-view').classList.add('hidden');
- document.getElementById('config-view').classList.add('hidden');
- renderTabla();
+function pintar(juegos){
+  const div = document.getElementById('lista');
+  div.innerHTML = juegos.map(g=>{
+    const local = g.homeCompetitor?.name || g.homeTeam?.name || 'Local';
+    const visita = g.awayCompetitor?.name || g.awayTeam?.name || 'Visita';
+    const golL = g.homeCompetitor?.score ?? '-';
+    const golV = g.awayCompetitor?.score ?? '-';
+    const minuto = g.statusText || g.gameTimeDisplay || 'vs';
+    return `<div class="match" onclick="abrir(${g.id})">
+      <span><img src="${g.homeCompetitor?.imageUrl || ''}"> ${local}</span>
+      <b>${golL} - ${golV} <small style="color:#facc15">${minuto}</small></b>
+      <span>${visita} <img src="${g.awayCompetitor?.imageUrl || ''}"></span>
+    </div>`;
+  }).join('');
 }
-const partidosReales = [
-  {dia:'AYER - 1 SEPT', h:'Delfín', a:'Técnico Universitario', hora:'1-0', estado:'FT'},
-  {dia:'AYER - 1 SEPT', h:'Liga de Quito', a:'Mushuc Runa', hora:'0-0', estado:'FT'},
-  {dia:'HOY - 2 SEPTIEMBRE', h:'Macará', a:'Manta', hora:'14:00', estado:'HOY'},
-  {dia:'HOY - 2 SEPTIEMBRE', h:'Deportivo Cuenca', a:'Guayaquil City', hora:'16:30', estado:'HOY'},
-  {dia:'HOY - 2 SEPTIEMBRE', h:'Barcelona', a:'Independiente del Valle', hora:'19:00', estado:'HOY'},
-  {dia:'MAÑANA - 3 SEPTIEMBRE', h:'Universidad Católica', a:'Aucas', hora:'14:00', estado:''},
-  {dia:'MAÑANA - 3 SEPTIEMBRE', h:'Leones', a:'Orense', hora:'16:30', estado:''},
-  {dia:'MAÑANA - 3 SEPTIEMBRE', h:'Libertad', a:'Emelec', hora:'19:00', estado:''},
-];
-let html='', lastDia='';
-partidosReales.forEach(m=>{
-  if(m.dia!==lastDia){
-    if(lastDia!=='') html+=`</div></div>`;
-    html+=`<div><div class="mb-2 text-[11px] font-black ${m.dia.includes('HOY')?'text-[#ff3b3b]':'text-[#facc15]'}">${m.dia}</div><div class="space-y-2">`;
-    lastDia=m.dia;
-  }
-  html+=`<div class="bg-[#1e2735] p-3 rounded-xl border ${m.estado.includes('HOY')?'border-red-500/30':''} flex items-center justify-between">
-    <div class="flex items-center gap-2 flex-1"><img src="${LOGOS[m.h]}" class="w-7 h-7 bg-white rounded-full p-1 object-contain"/><span class="text-[11px] font-bold truncate">${m.h}</span></div>
-    <div class="mx-2 ${m.estado==='FT'?'bg-gray-600':m.estado.includes('HOY')?'bg-red-600':'bg-[#0f141e]'} px-3 py-1 rounded-full text-[10px] font-black min-w-[55px] text-center">${m.hora}</div>
-    <div class="flex items-center gap-2 flex-1 justify-end"><span class="text-[11px] font-bold truncate text-right">${m.a}</span><img src="${LOGOS[m.a]}" class="w-7 h-7 bg-white rounded-full p-1 object-contain"/></div>
-  </div>`;
-});
-document.getElementById('list').innerHTML=html;
-function renderTabla(){
-  const tabla=[
-    {n:1,e:'Independiente del Valle',pts:68,pj:27},
-    {n:2,e:'Aucas',pts:47,pj:27},
-    {n:3,e:'Macará',pts:45,pj:27},
-    {n:4,e:'Universidad Católica',pts:44,pj:27},
-    {n:5,e:'Liga de Quito',pts:42,pj:28},
-    {n:6,e:'Barcelona',pts:39,pj:27},
-    {n:7,e:'Mushuc Runa',pts:37,pj:28},
-    {n:8,e:'Libertad',pts:37,pj:27},
-    {n:9,e:'Guayaquil City',pts:36,pj:27},
-    {n:10,e:'Leones',pts:35,pj:27},
-    {n:11,e:'Emelec',pts:35,pj:27},
-    {n:12,e:'Deportivo Cuenca',pts:33,pj:27},
-    {n:13,e:'Orense',pts:32,pj:27},
-    {n:14,e:'Delfín',pts:30,pj:27},
-    {n:15,e:'Técnico Universitario',pts:28,pj:27},
-    {n:16,e:'Manta',pts:20,pj:27},
-  ];
-  let thtml='';
-  tabla.forEach(t=>{
-    thtml+=`<tr class="border-t border-gray-700/30"><td class="py-2">${t.n}</td><td class="flex items-center gap-2 py-1"><img src="${LOGOS[t.e]||''}" class="w-5 h-5 bg-white rounded-full p-0.5 object-contain">${t.e}</td><td class="text-center">${t.pts}</td><td class="text-center">${t.pj}</td></tr>`;
-  });
-  document.getElementById('tabla-body').innerHTML=thtml;
+async function abrir(id){
+  const res = await fetch(`${WORKER}?gameId=${id}`);
+  const d = await res.json();
+  const game = d.game;
+  document.getElementById('ficha').innerHTML = `
+    <button onclick="this.parentElement.style.display='none'" style="background:red;color:white;padding:10px;border-radius:8px">Cerrar X</button>
+    <h2>${game.homeCompetitor.name} ${game.homeCompetitor.score} - ${game.awayCompetitor.score} ${game.awayCompetitor.name}</h2>
+    <p>Estadio: ${game.stadium?.name || 'LigaPro'} | ${game.statusText}</p>
+    <h3>Alineaciones</h3>
+    <p>${(game.homeCompetitor.lineups?.members || []).map(m=>m.athlete.name).join(', ')}</p>
+    <p>vs</p>
+    <p>${(game.awayCompetitor.lineups?.members || []).map(m=>m.athlete.name).join(', ')}</p>
+  `;
+  document.getElementById('ficha').style.display='block';
 }
+function filtrar(t,el){
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active')); el.classList.add('active');
+  if(t==='all') pintar(TODOS);
+  if(t==='live') pintar(TODOS.filter(g=>g.statusText?.includes("'") || g.isLive));
+  if(t==='finished') pintar(TODOS.filter(g=>g.statusText?.toLowerCase().includes('fin')));
+}
+cargar();
 </script>
 </body>
 </html>
